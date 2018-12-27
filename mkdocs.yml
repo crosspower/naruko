@@ -1,0 +1,12 @@
+site_name: NARUKO
+repo_url: https://github.com/crosspower/naruko
+repo_name: GitHub
+theme:
+  name: 'material'
+  language: 'ja'
+extra:
+  search:
+    language: 'jp'
+nav:
+  - Home: 'index.md'
+  - 環境構築: 'installation.md'
