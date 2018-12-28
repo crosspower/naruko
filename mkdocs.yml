@@ -1,5 +1,5 @@
 site_name: NARUKO
-repo_url: https://github.com/crosspower/naruko
+repo_url: https://github.com/crosspower/exam-pj
 repo_name: GitHub
 theme:
   name: 'material'
@@ -10,3 +10,4 @@ extra:
 nav:
   - Home: 'index.md'
   - 環境構築: 'installation.md'
+  - 開発者向け構築: 'developer.md'

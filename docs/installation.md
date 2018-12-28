@@ -158,13 +158,13 @@ ElasticBeanstalkを利用した環境では毎デプロイ時に自動的に初�
 そのため編集された初期データはデプロイ時に初期のデータに戻ります。  
 編集した初期データを使い続けたい場合は以下のファイルを編集してください。  
 
-[initial_data.json](https://github.com/crosspower/naruko/blob/master/backend/fixtures/initial_data.json)
+[initial_data.json](https://github.com/crosspower/exam-pj/blob/master/backend/fixtures/initial_data.json)
 
 ## リージョンの変更について<a name="region"></a>
 
 鳴子を利用されるリージョンを変更したい場合、以下のファイルを編集する必要があります。  
 
-[base.py](https://github.com/crosspower/naruko/blob/master/config/settings/base.py): 15行目  
+[base.py](https://github.com/crosspower/exam-pj/blob/master/config/settings/base.py): 15行目  
 
 ```
 NARUKO_REGION = "ap-northeast-1"
