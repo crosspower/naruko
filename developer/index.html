@@ -320,15 +320,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5iam" title="5.Iamロールの設定" class="md-nav__link">
-    5.Iamロールの設定
+  <a href="#5-amazon-connect" title="5. Amazon Connect 設定" class="md-nav__link">
+    5. Amazon Connect 設定
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#6codebuild" title="6.CodeBuild" class="md-nav__link">
-    6.CodeBuild
+  <a href="#6iam" title="6.Iamロールの設定" class="md-nav__link">
+    6.Iamロールの設定
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7codebuild" title="7.CodeBuild" class="md-nav__link">
+    7.CodeBuild
   </a>
   
     <nav class="md-nav">
@@ -354,15 +361,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7" title="7.ソースコードの反映" class="md-nav__link">
-    7.ソースコードの反映
+  <a href="#8" title="8.ソースコードの反映" class="md-nav__link">
+    8.ソースコードの反映
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#8" title="8. 動作確認" class="md-nav__link">
-    8. 動作確認
+  <a href="#9" title="9. 動作確認" class="md-nav__link">
+    9. 動作確認
   </a>
   
 </li>
@@ -375,6 +382,18 @@
   
 </nav>
     
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../manual/" title="利用者マニュアル" class="md-nav__link">
+      利用者マニュアル
+    </a>
   </li>
 
     
@@ -434,15 +453,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5iam" title="5.Iamロールの設定" class="md-nav__link">
-    5.Iamロールの設定
+  <a href="#5-amazon-connect" title="5. Amazon Connect 設定" class="md-nav__link">
+    5. Amazon Connect 設定
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#6codebuild" title="6.CodeBuild" class="md-nav__link">
-    6.CodeBuild
+  <a href="#6iam" title="6.Iamロールの設定" class="md-nav__link">
+    6.Iamロールの設定
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7codebuild" title="7.CodeBuild" class="md-nav__link">
+    7.CodeBuild
   </a>
   
     <nav class="md-nav">
@@ -468,15 +494,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7" title="7.ソースコードの反映" class="md-nav__link">
-    7.ソースコードの反映
+  <a href="#8" title="8.ソースコードの反映" class="md-nav__link">
+    8.ソースコードの反映
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#8" title="8. 動作確認" class="md-nav__link">
-    8. 動作確認
+  <a href="#9" title="9. 動作確認" class="md-nav__link">
+    9. 動作確認
   </a>
   
 </li>
@@ -536,9 +562,11 @@
 またデプロイ時に実行されるテストコードでも「DEV_」がついた設定値を読み込みます。</p>
 <h2 id="4ses">4.SES設定</h2>
 <p><a href="../installation/">環境構築</a>の3.SESを参照してください。</p>
-<h2 id="5iam">5.Iamロールの設定</h2>
-<p><a href="../installation/">環境構築</a>の4.Iamロールの設定を参照してください。</p>
-<h2 id="6codebuild">6.CodeBuild</h2>
+<h2 id="5-amazon-connect">5. Amazon Connect 設定</h2>
+<p><a href="../installation/">環境構築</a>の4. Amazon Connect 設定を参照してください。</p>
+<h2 id="6iam">6.Iamロールの設定</h2>
+<p><a href="../installation/">環境構築</a>の5.Iamロールの設定を参照してください。</p>
+<h2 id="7codebuild">7.CodeBuild</h2>
 <p>CodeStarからPythonの環境を作成した場合、CodeBuildのビルド環境は2018年12月28日時点でPython3.5.2が使用されているためCodeBuildの環境をPython3.6.5に変更します。  </p>
 <p>この際そのまま変更しようとすると</p>
 <pre><code>「Role XXXXXXXXXXXXXXX trusts too many services, expected only 1.」
@@ -560,9 +588,9 @@
 <p><img alt="143877" src="../img/build_env_13.png" /></p>
 <p>CodeBuildから接続するDBによってはここでVPCやサブネットの設定をする必要があります。<br />
 参考：<a href="https://aws.amazon.com/jp/blogs/devops/access-resources-in-a-vpc-from-aws-codebuild-builds/">AWS CodeBuildビルドからVPC内のリソースにアクセスする</a></p>
-<h2 id="7">7.ソースコードの反映</h2>
+<h2 id="8">8.ソースコードの反映</h2>
 <p><a href="../installation/">環境構築</a>の5.ソースコードの反映を参照してください。</p>
-<h2 id="8">8. 動作確認</h2>
+<h2 id="9">9. 動作確認</h2>
 <p><a href="../installation/">環境構築</a>の6.動作確認の設定を参照してください。</p>
                 
                   
@@ -598,6 +626,20 @@
             </div>
           </a>
         
+        
+          <a href="../manual/" title="利用者マニュアル" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  次
+                </span>
+                利用者マニュアル
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
         
       </nav>
     </div>

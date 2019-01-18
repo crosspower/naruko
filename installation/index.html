@@ -301,35 +301,69 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4iam" title="4.Iamロールの設定" class="md-nav__link">
-    4.Iamロールの設定
+  <a href="#4-amazon-connect" title="4. Amazon Connect 設定" class="md-nav__link">
+    4. Amazon Connect 設定
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" title="インスタンス作成" class="md-nav__link">
+    インスタンス作成
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" title="電話番号取得" class="md-nav__link">
+    電話番号取得
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" title="問い合わせフローの作成" class="md-nav__link">
+    問い合わせフローの作成
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5iam" title="5.Iamロールの設定" class="md-nav__link">
+    5.Iamロールの設定
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#5" title="5.ソースコードの反映" class="md-nav__link">
-    5.ソースコードの反映
+  <a href="#6" title="6.ソースコードの反映" class="md-nav__link">
+    6.ソースコードの反映
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#6" title="6.動作確認" class="md-nav__link">
-    6.動作確認
+  <a href="#7" title="7.動作確認" class="md-nav__link">
+    7.動作確認
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" title="初期データについて" class="md-nav__link">
+  <a href="#_6" title="初期データについて" class="md-nav__link">
     初期データについて
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" title="リージョンの変更について" class="md-nav__link">
+  <a href="#_7" title="リージョンの変更について" class="md-nav__link">
     リージョンの変更について
   </a>
   
@@ -354,6 +388,18 @@
   <li class="md-nav__item">
     <a href="../developer/" title="開発者向け構築" class="md-nav__link">
       開発者向け構築
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../manual/" title="利用者マニュアル" class="md-nav__link">
+      利用者マニュアル
     </a>
   </li>
 
@@ -407,35 +453,69 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4iam" title="4.Iamロールの設定" class="md-nav__link">
-    4.Iamロールの設定
+  <a href="#4-amazon-connect" title="4. Amazon Connect 設定" class="md-nav__link">
+    4. Amazon Connect 設定
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" title="インスタンス作成" class="md-nav__link">
+    インスタンス作成
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" title="電話番号取得" class="md-nav__link">
+    電話番号取得
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" title="問い合わせフローの作成" class="md-nav__link">
+    問い合わせフローの作成
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5iam" title="5.Iamロールの設定" class="md-nav__link">
+    5.Iamロールの設定
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#5" title="5.ソースコードの反映" class="md-nav__link">
-    5.ソースコードの反映
+  <a href="#6" title="6.ソースコードの反映" class="md-nav__link">
+    6.ソースコードの反映
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#6" title="6.動作確認" class="md-nav__link">
-    6.動作確認
+  <a href="#7" title="7.動作確認" class="md-nav__link">
+    7.動作確認
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" title="初期データについて" class="md-nav__link">
+  <a href="#_6" title="初期データについて" class="md-nav__link">
     初期データについて
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" title="リージョンの変更について" class="md-nav__link">
+  <a href="#_7" title="リージョンの変更について" class="md-nav__link">
     リージョンの変更について
   </a>
   
@@ -513,7 +593,7 @@
 </tr>
 <tr>
 <td>NOTIFY_TEXT_MESSAGE</td>
-<td>監視機能で送信される通知メールの本文を設定します※</td>
+<td>監視機能で送信される通知メールの本文および電話の読み上げ内容を設定します※</td>
 </tr>
 <tr>
 <td>NOTIFY_TEXT_SUBJECT</td>
@@ -522,6 +602,22 @@
 <tr>
 <td>EVENT_SNS_TOPIC_ARN</td>
 <td>スケジュール機能用のSNSトピックARN 「arn:aws:sns:{鳴子を利用するリージョン}:{鳴子を利用するAWSアカウントのID}:NARUKO_SCHEDULE」を設定します。</td>
+</tr>
+<tr>
+<td>CONNECT_REGION</td>
+<td>電話通知機能用のAmazonConnectを使用するリージョン 東京であれば「ap-northeast-1」と設定します</td>
+</tr>
+<tr>
+<td>CONNECT_NOTIFY_INSTANCE_ID</td>
+<td>電話通知機能用のAmazonConnectのインスタンスIDを設定します(後述)</td>
+</tr>
+<tr>
+<td>CONNECT_NOTIFY_FLOW_ID</td>
+<td>電話通知機能用のAmazonConnectで使用する問い合わせフローのIDを設定します(後述)</td>
+</tr>
+<tr>
+<td>CONNECT_PHONE_NUMBER</td>
+<td>電話通知機能用のAmazonConnectで使用する電話番号を設定します(後述)</td>
 </tr>
 <tr>
 <td>DB_ENGINE</td>
@@ -603,7 +699,34 @@
 SESでは初期状態では登録したメールアドレスでしか送受信を行うことができないため、<a href="https://docs.aws.amazon.com/ja_jp/ses/latest/DeveloperGuide/request-production-access.html">ドキュメント</a>を参考にメールの受信はどのメールアドレスでも行えるように設定します。  </p>
 <p>また、<a href="https://docs.aws.amazon.com/ja_jp/ses/latest/DeveloperGuide/verify-email-addresses-procedure.html">ドキュメント</a>を参考に送信用のメールアドレスを設定します。<br />
 ここで設定するメールアドレスは設定値の「SES_ADDRESS」と同じメールアドレスにしてください。  </p>
-<h2 id="4iam">4.Iamロールの設定</h2>
+<h2 id="4-amazon-connect">4. Amazon Connect 設定</h2>
+<h3 id="_3">インスタンス作成</h3>
+<p>鳴子ではAmazonConnectを利用して電話による通知をおこないます。<br />
+<a href="https://docs.aws.amazon.com/ja_jp/connect/latest/adminguide/gettingstarted.html#launch-contact-center">ドキュメント</a>を参考にAmazonConnectインスタンスを作成します。</p>
+<p><strong>ステップ 1: ID 管理</strong>では<strong>Amazon Connect 内にユーザーを保存</strong>を選択します。<br />
+<strong>ステップ 2: 管理者</strong>では<strong>これをスキップ</strong>を選択します。<br />
+<strong>ステップ 3: テレフォニーオプション</strong>では<strong>発信通話</strong>にのみチェックを入れます。<br />
+<strong>ステップ 4: データストレージ</strong>ではデフォルトの設定のまま次に進みます。<br />
+<strong>ステップ 5: レビューと作成</strong>で設定内容を確認し、インスタンスを作成します。</p>
+<h3 id="_4">電話番号取得</h3>
+<p>インスタンス作成直後、<strong>今すぐ始める</strong>というボタンが表示されているのでそこを推すと電話番号を取得する画面が表示されます。  </p>
+<p>電話番号はAmazonConnectから提供される好きな番号を利用できます。<br />
+ここで取得した電話番号を設定値の「CONNECT_PHONE_NUMBER」に設定します。<br />
+※「+81 50-1234-5678」なら「+815012345678」のようにスペースをハイフンを除いて設定します。</p>
+<h3 id="_5">問い合わせフローの作成</h3>
+<p>電話通知用の問い合わせフローを作成します。<br />
+問い合わせフローはあらかじめ作成したテンプレートデータをインポートして作成します。 
+テンプレートデータは下記のjsonをご利用ください。   </p>
+<pre><code>{&quot;modules&quot;:[{&quot;id&quot;:&quot;68d92ff0-eaed-48da-b578-ce100266c320&quot;,&quot;type&quot;:&quot;PlayPrompt&quot;,&quot;branches&quot;:[{&quot;condition&quot;:&quot;Success&quot;,&quot;transition&quot;:&quot;6ef88a5f-2165-4a33-86cc-1999db2e2181&quot;}],&quot;parameters&quot;:[{&quot;name&quot;:&quot;Text&quot;,&quot;value&quot;:&quot;message&quot;,&quot;namespace&quot;:&quot;User Defined&quot;},{&quot;name&quot;:&quot;TextToSpeechType&quot;,&quot;value&quot;:&quot;text&quot;}],&quot;metadata&quot;:{&quot;position&quot;:{&quot;x&quot;:908,&quot;y&quot;:49},&quot;useDynamic&quot;:true}},{&quot;id&quot;:&quot;7eeb0845-cd65-42b6-9ce0-5d830354351a&quot;,&quot;type&quot;:&quot;Disconnect&quot;,&quot;branches&quot;:[],&quot;parameters&quot;:[],&quot;metadata&quot;:{&quot;position&quot;:{&quot;x&quot;:922,&quot;y&quot;:242}}},{&quot;id&quot;:&quot;6ef88a5f-2165-4a33-86cc-1999db2e2181&quot;,&quot;type&quot;:&quot;Loop&quot;,&quot;branches&quot;:[{&quot;condition&quot;:&quot;Looping&quot;,&quot;transition&quot;:&quot;68d92ff0-eaed-48da-b578-ce100266c320&quot;},{&quot;condition&quot;:&quot;Complete&quot;,&quot;transition&quot;:&quot;7eeb0845-cd65-42b6-9ce0-5d830354351a&quot;}],&quot;parameters&quot;:[{&quot;name&quot;:&quot;LoopCount&quot;,&quot;namespace&quot;:&quot;User Defined&quot;,&quot;value&quot;:&quot;loop_count&quot;}],&quot;metadata&quot;:{&quot;position&quot;:{&quot;x&quot;:670,&quot;y&quot;:39},&quot;useDynamic&quot;:true}},{&quot;id&quot;:&quot;795ee0f8-2d69-4227-bc19-668cd328370d&quot;,&quot;type&quot;:&quot;SetVoice&quot;,&quot;branches&quot;:[{&quot;condition&quot;:&quot;Success&quot;,&quot;transition&quot;:&quot;6ef88a5f-2165-4a33-86cc-1999db2e2181&quot;}],&quot;parameters&quot;:[{&quot;name&quot;:&quot;GlobalVoice&quot;,&quot;value&quot;:&quot;Mizuki&quot;}],&quot;metadata&quot;:{&quot;position&quot;:{&quot;x&quot;:424,&quot;y&quot;:32}}},{&quot;id&quot;:&quot;a795007b-4714-4cfa-a593-70e1a4429991&quot;,&quot;type&quot;:&quot;SetAttributes&quot;,&quot;branches&quot;:[{&quot;condition&quot;:&quot;Success&quot;,&quot;transition&quot;:&quot;795ee0f8-2d69-4227-bc19-668cd328370d&quot;},{&quot;condition&quot;:&quot;Error&quot;,&quot;transition&quot;:&quot;795ee0f8-2d69-4227-bc19-668cd328370d&quot;}],&quot;parameters&quot;:[{&quot;name&quot;:&quot;Attribute&quot;,&quot;value&quot;:&quot;success&quot;,&quot;key&quot;:&quot;status&quot;,&quot;namespace&quot;:null}],&quot;metadata&quot;:{&quot;position&quot;:{&quot;x&quot;:185,&quot;y&quot;:30}}}],&quot;version&quot;:&quot;1&quot;,&quot;type&quot;:&quot;contactFlow&quot;,&quot;start&quot;:&quot;a795007b-4714-4cfa-a593-70e1a4429991&quot;,&quot;metadata&quot;:{&quot;entryPointPosition&quot;:{&quot;x&quot;:32,&quot;y&quot;:31},&quot;snapToGrid&quot;:false,&quot;name&quot;:&quot;naruko_notification&quot;,&quot;description&quot;:null,&quot;type&quot;:&quot;contactFlow&quot;,&quot;status&quot;:&quot;published&quot;,&quot;hash&quot;:&quot;3351c6c93afd0d0e2bea7ae1989f38d19613853c28629c5392e53a83d6e323d3&quot;}}
+</code></pre>
+
+<p>問い合わせフローを保存するとブラウザで表示されるURLが以下のようになります。  </p>
+<pre><code>https://【ステップ1で入力した文字列】.awsapps.com/connect/contact-flows/edit?id=arn:aws:connect:【リージョン】:【AWSアカウントID】:instance/【インスタンスID】/contact-flow/【問い合わせフローID】
+</code></pre>
+
+<p>【インスタンスID】を設定値の「CONNECT_NOTIFY_INSTANCE_ID」に<br />
+【問い合わせフローID】を設定値の「CONNECT_NOTIFY_FLOW_ID」に設定します。</p>
+<h2 id="5iam">5.Iamロールの設定</h2>
 <p>鳴子ではプログラム内で様々なAWSサービスを利用しています。<br />
 本手順に従って動作環境を構築している場合、「CodeStarWorker-{CodeStarのプロジェクト名}-EB」ロールに適切な権限を割り当てる必要があります。  </p>
 <p>IAMから鳴子用のポリシーを作成します。<br />
@@ -615,6 +738,7 @@ SESでは初期状態では登録したメールアドレスでしか送受信�
             &quot;Sid&quot;: &quot;VisualEditor0&quot;,
             &quot;Effect&quot;: &quot;Allow&quot;,
             &quot;Action&quot;: [
+                &quot;connect:StartOutboundVoiceContact&quot;,
                 &quot;events:DescribeRule&quot;,
                 &quot;tag:GetResources&quot;,
                 &quot;events:PutRule&quot;,
@@ -645,12 +769,12 @@ SESでは初期状態では登録したメールアドレスでしか送受信�
 <p><img alt="143878" src="../img/build_env_6.png" /></p>
 <p>「CodeStarWorker-{CodeStarのプロジェクト名}-EB」に作成したポリシーをアタッチします。  </p>
 <p><img alt="143879" src="../img/build_env_7.png" /></p>
-<h2 id="5">5.ソースコードの反映</h2>
+<h2 id="6">6.ソースコードの反映</h2>
 <p>CodeStarで作成されたリポジトリのmasterブランチに鳴子のソースコードをpushします。<br />
 CodeStar上でアプリケーションの反映が完了したことが確認出来たらエンドポイントにアクセスします。<br />
 以下のようなログイン画面が表示されることを確認します。  </p>
 <p><img alt="143879" src="../img/build_env_8.png" /></p>
-<h2 id="6">6.動作確認</h2>
+<h2 id="7">7.動作確認</h2>
 <p>ログイン画面で<br />
 メールアドレスに「admin@admin.com」<br />
 パスワードに「Passw0rd!」<br />
@@ -658,12 +782,12 @@ CodeStar上でアプリケーションの反映が完了したことが確認出
 <p>ダッシュボードが表示されたら構築完了です。<br />
 お疲れさまでした。  </p>
 <p><img alt="143879" src="../img/build_env_9.png" /></p>
-<h2 id="_3">初期データについて</h2>
+<h2 id="_6">初期データについて</h2>
 <p>ElasticBeanstalkを利用した環境では毎デプロイ時に自動的に初期データが投入されます。<br />
 そのため編集された初期データはデプロイ時に初期のデータに戻ります。<br />
 編集した初期データを使い続けたい場合は以下のファイルを編集してください。  </p>
 <p><a href="https://github.com/crosspower/exam-pj/blob/master/backend/fixtures/initial_data.json">initial_data.json</a></p>
-<h2 id="_4">リージョンの変更について<a name="region"></a></h2>
+<h2 id="_7">リージョンの変更について<a name="region"></a></h2>
 <p>鳴子を利用されるリージョンを変更したい場合、以下のファイルを編集する必要があります。  </p>
 <p><a href="https://github.com/crosspower/exam-pj/blob/master/config/settings/base.py">base.py</a>: 15行目  </p>
 <pre><code>NARUKO_REGION = &quot;ap-northeast-1&quot;
