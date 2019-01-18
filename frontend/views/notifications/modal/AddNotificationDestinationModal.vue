@@ -31,6 +31,16 @@
                                 type="text"
                                 prepend-icon="mdi-email-outline"
                                 label="メールアドレス*"
+                                v-if="type === 'email'"
+                        ></v-text-field>
+                        <v-text-field
+                                v-model="phone_number"
+                                :disabled="isProgress"
+                                :rules="phoneRules"
+                                type="text"
+                                prepend-icon="mdi-phone"
+                                label="電話番号*"
+                                v-if="type === 'telephone'"
                         ></v-text-field>
                     </v-form>
                     <small>*必須項目</small>
@@ -70,8 +80,10 @@
         type: '',
         name: '',
         address: '',
+        phone_number: '',
         nameRules: VALIDATION_RULE.NOTIFICATION.DESTINATION.NAME,
         addressRules: VALIDATION_RULE.NOTIFICATION.DESTINATION.ADDRESS,
+        phoneRules: VALIDATION_RULE.NOTIFICATION.DESTINATION.TEL,
         resolve: null,
         reject: null
       }
@@ -96,7 +108,8 @@
           const data = {
             name: this.name,
             type: this.type,
-            address: this.address
+            address: this.address,
+            phone_number: this.phone_number
           }
           this.addDestination(data).then(() => {
             return this.resolve(true)

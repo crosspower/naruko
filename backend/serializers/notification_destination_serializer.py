@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from backend.models import NotificationDestinationModel, EmailDestination
+from backend.models import NotificationDestinationModel, EmailDestination, TelephoneDestination
+from backend.validators.phone_number import PhoneNumber
 
 
 # 通知先ベース
@@ -39,20 +40,45 @@ class EmailDestinationModelSerializer(serializers.ModelSerializer):
 
     class Meta(NotificationDestinationModelSerializer.Meta):
         model = EmailDestination
-        NotificationDestinationModelSerializer.Meta.fields += (
+        fields = NotificationDestinationModelDetailSerializer.Meta.fields + (
             'type',
             'address',
         )
 
 
-class EmailDestinationModelDetailSerializer(NotificationDestinationModelDetailSerializer):
+class EmailDestinationModelDetailSerializer(serializers.ModelSerializer):
     type = serializers.CharField(read_only=True, default="email")
 
     class Meta(NotificationDestinationModelDetailSerializer.Meta):
         model = EmailDestination
-        NotificationDestinationModelDetailSerializer.Meta.fields += (
+        fields = NotificationDestinationModelDetailSerializer.Meta.fields + (
             'type',
             'address',
+        )
+
+
+# Telephone
+class TelephoneDestinationModelSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(read_only=True, default="telephone")
+    phone_number = serializers.CharField(validators=[PhoneNumber()])
+
+    class Meta(NotificationDestinationModelSerializer.Meta):
+        model = TelephoneDestination
+        fields = NotificationDestinationModelDetailSerializer.Meta.fields + (
+            'type',
+            'phone_number',
+        )
+
+
+class TelephoneDestinationModelDetailSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(read_only=True, default="telephone")
+    phone_number = serializers.CharField(validators=[PhoneNumber()])
+
+    class Meta(NotificationDestinationModelDetailSerializer.Meta):
+        model = TelephoneDestination
+        fields = NotificationDestinationModelDetailSerializer.Meta.fields + (
+            'type',
+            'phone_number',
         )
 
 
@@ -64,7 +90,8 @@ def serialize_destinations_detail(destinations: list):
     :return: シリアライズ結果
     """
     dest_types = {
-        EmailDestination: EmailDestinationModelDetailSerializer
+        EmailDestination: EmailDestinationModelDetailSerializer,
+        TelephoneDestination: TelephoneDestinationModelDetailSerializer
     }
 
     return [dest_types[type(dest)](dest).data for dest in destinations]
@@ -72,7 +99,8 @@ def serialize_destinations_detail(destinations: list):
 
 def serialize_destination(destination: NotificationDestinationModel):
     dest_types = {
-        EmailDestination: EmailDestinationModelSerializer
+        EmailDestination: EmailDestinationModelSerializer,
+        TelephoneDestination: TelephoneDestinationModelSerializer
     }
 
     return dest_types[type(destination)](destination).data
@@ -80,7 +108,8 @@ def serialize_destination(destination: NotificationDestinationModel):
 
 def get_serializer(destination: dict):
     dest_types = {
-        "email": EmailDestinationModelSerializer
+        "email": EmailDestinationModelSerializer,
+        "telephone": TelephoneDestinationModelSerializer
     }
 
     return dest_types[destination["type"]](data=destination)

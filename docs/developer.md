@@ -49,12 +49,16 @@
 
 [環境構築](installation.md)の3.SESを参照してください。
 
-## 5.Iamロールの設定
+## 5. Amazon Connect 設定
 
-[環境構築](installation.md)の4.Iamロールの設定を参照してください。
+[環境構築](installation.md)の4. Amazon Connect 設定を参照してください。
+
+## 6.Iamロールの設定
+
+[環境構築](installation.md)の5.Iamロールの設定を参照してください。
 
 
-## 6.CodeBuild
+## 7.CodeBuild
 
 CodeStarからPythonの環境を作成した場合、CodeBuildのビルド環境は2018年12月28日時点でPython3.5.2が使用されているためCodeBuildの環境をPython3.6.5に変更します。  
 
@@ -89,10 +93,10 @@ CodeBuildの環境を以下のように編集します。
 CodeBuildから接続するDBによってはここでVPCやサブネットの設定をする必要があります。  
 参考：[AWS CodeBuildビルドからVPC内のリソースにアクセスする](https://aws.amazon.com/jp/blogs/devops/access-resources-in-a-vpc-from-aws-codebuild-builds/)
 
-## 7.ソースコードの反映
+## 8.ソースコードの反映
 
 [環境構築](installation.md)の5.ソースコードの反映を参照してください。
 
-## 8. 動作確認
+## 9. 動作確認
 
 [環境構築](installation.md)の6.動作確認の設定を参照してください。

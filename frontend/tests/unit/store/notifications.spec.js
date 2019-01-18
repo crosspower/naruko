@@ -56,7 +56,16 @@ describe('store/modules/notifications', () => {
         address: 'test@test.com',
         created_at: '2018-12-03T20:23:22.576000+09:00',
         updated_at: '2018-12-03T20:23:25.577000+09:00'
-      }
+      },
+      {
+        id: 2,
+        name: 'name2',
+        tenant: {},
+        type: 'telephone',
+        phone_number: '03-1234-5678',
+        created_at: '2018-12-03T20:23:22.576000+09:00',
+        updated_at: '2018-12-03T20:23:25.577000+09:00'
+      },
     ]
 
     const expectedData = [
@@ -70,6 +79,19 @@ describe('store/modules/notifications', () => {
         },
         value: "test@test.com",
         address: 'test@test.com',
+        created_at: '2018-12-03T20:23:22.576000+09:00',
+        updated_at: '2018-12-03T20:23:25.577000+09:00'
+      },
+      {
+        id: 2,
+        name: 'name2',
+        tenant: {},
+        type: {
+          id: 'telephone',
+          name: '電話'
+        },
+        value: "03-1234-5678",
+        phone_number: '03-1234-5678',
         created_at: '2018-12-03T20:23:22.576000+09:00',
         updated_at: '2018-12-03T20:23:25.577000+09:00'
       }
@@ -105,6 +127,40 @@ describe('store/modules/notifications', () => {
       name: 'name',
       type: 'email',
       address: 'test@test.com'
+    }
+
+    const httpClient = require('@/lib/httpClient').default
+    httpClient.tenant.addNotificationDestination = jest.fn().mockImplementation((cid, d) => {
+      expect(cid).toBe(userData.tenant.id)
+      expect(d).toBe(data)
+      return Promise.resolve()
+    })
+
+    const rootGetters = {
+      'user/userData': userData
+    }
+    const dispatch = jest.fn()
+    notifications.actions.addDestination({rootGetters, dispatch}, data).then(() => {
+      expect(httpClient.tenant.addNotificationDestination).toHaveBeenCalledWith(userData.tenant.id, data)
+      expect(dispatch).toHaveBeenCalledWith('alert/pushSuccessAlert', `通知先 name を登録しました。`, {root: true})
+      done()
+    })
+  })
+
+  it('actions.addDestinations', (done) => {
+    const notifications = require('@/store/modules/notifications').default
+
+    const userData = {
+      tenant: {
+        id: 1,
+        name: 'test_tenant'
+      }
+    }
+
+    const data = {
+      name: 'name',
+      type: 'telephone',
+      phone_number: '03-1234-5678'
     }
 
     const httpClient = require('@/lib/httpClient').default

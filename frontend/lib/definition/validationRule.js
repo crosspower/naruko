@@ -82,6 +82,17 @@ export default new Enum({
       ADDRESS: [
         v => !!v || 'メールアドレスを入力してください。',
         v => /.+@.+/.test(v) || '正しいメールアドレスを入力してください。'
+      ],
+      TEL: [
+        v => !!v || '電話番号を入力してください。',
+        (v) => {
+          const message = '正しい電話番号を入力してください。'
+          let valid = false
+          if (v) {
+            valid = new AsYouType('JP').input(v) === v && isValidNumber(v, 'JP')
+          }
+          return valid || message
+        }
       ]
     },
     GROUP: {

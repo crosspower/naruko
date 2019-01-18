@@ -1,5 +1,6 @@
 from django.test import TestCase
-from backend.models.notification_destination import NotificationDestinationModel, EmailDestination, TenantModel
+from backend.models.notification_destination import NotificationDestinationModel, EmailDestination, TenantModel, \
+    TelephoneDestination
 from backend.models import AwsEnvironmentModel, TenantModel
 from backend.models.resource.ec2 import Ec2
 from datetime import datetime
@@ -94,6 +95,27 @@ class NotificationDestinationModelTestCase(TestCase):
         # Email通知先として取得したときに区別できているか
         destination_objects_all = EmailDestination.all()
         self.assertTrue(isinstance(destination_objects_all[0], EmailDestination))
+
+    # Telephoneとして登録できるか確認する
+    def test_telephone(self):
+        now = datetime.now()
+        tenant_model = TenantModel.objects.create(
+            tenant_name="test_tenant",
+            created_at=now,
+            updated_at=now
+        )
+        objects_create = TelephoneDestination.objects.create(
+            name="test", tenant=tenant_model, phone_number="+81312345678", created_at=now, updated_at=now)
+
+        objects_create.save()
+
+        # 通知先として取得したときに区別できているか
+        objects_all = NotificationDestinationModel.all()
+        self.assertTrue(isinstance(objects_all[0], TelephoneDestination))
+
+        # Telephone通知先として取得したときに区別できているか
+        destination_objects_all = TelephoneDestination.all()
+        self.assertTrue(isinstance(destination_objects_all[0], TelephoneDestination))
 
     # テナントを削除したときに紐づく通知先が削除されることを確認する
     def test_delete_cascade_tenant(self):
@@ -196,4 +218,49 @@ class NotificationDestinationModelTestCase(TestCase):
         res = objects_create.notify(mock_message)
 
         mock_ses.return_value.send_notify_mail.assert_called_with(mock_message, "test@test.com")
+        self.assertEqual(res, "TEST_MESSAGE")
+
+    # 電話通知：正常系
+    @mock.patch('backend.models.notification_destination.Connect')
+    def test_telephone_notify(self, mock_connect):
+        now = datetime.now()
+        tenant_model = TenantModel.objects.create(
+            tenant_name="test_tenant",
+            created_at=now,
+            updated_at=now
+        )
+        objects_create = TelephoneDestination.objects.create(
+            name="test", tenant=tenant_model, phone_number="080-1234-5678", created_at=now, updated_at=now)
+
+        objects_create.save()
+
+        mock_message = mock.Mock()
+        res = objects_create.notify(mock_message)
+
+        mock_connect.return_value.start_outbound_voice_contact.assert_called_with(mock_message, "+818012345678")
+        self.assertEqual(res, "SUCCESS.")
+
+    # 電話通知：正常系
+    @mock.patch('backend.models.notification_destination.Connect')
+    def test_telephone_notify_exception(self, mock_connect):
+        now = datetime.now()
+        tenant_model = TenantModel.objects.create(
+            tenant_name="test_tenant",
+            created_at=now,
+            updated_at=now
+        )
+        objects_create = TelephoneDestination.objects.create(
+            name="test", tenant=tenant_model, phone_number="080-1234-5678", created_at=now, updated_at=now)
+
+        objects_create.save()
+
+        mock_message = mock.Mock()
+        mock_connect.return_value.start_outbound_voice_contact.side_effect = ClientError(
+            error_response=dict(Error=dict(Message="TEST_MESSAGE")),
+            operation_name="TEST"
+        )
+
+        res = objects_create.notify(mock_message)
+
+        mock_connect.return_value.start_outbound_voice_contact.assert_called_with(mock_message, "+818012345678")
         self.assertEqual(res, "TEST_MESSAGE")

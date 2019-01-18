@@ -8,8 +8,10 @@ from backend.models.tenant import TenantModel
 from backend.models.resource.resource import Resource
 from backend.models.aws_environment import AwsEnvironmentModel
 from backend.externals.ses import Ses
+from backend.externals.connect import Connect
 from datetime import datetime, timedelta
 from botocore.exceptions import ClientError
+import phonenumbers
 
 
 class NotificationDestinationModel(PolymorphicModel, SoftDeletionModel):
@@ -95,3 +97,28 @@ class EmailDestination(NotificationDestinationModel, SoftDeletionModel):
             return e.response["Error"]["Message"]
         else:
             return "SUCCESS."
+
+
+class TelephoneDestination(NotificationDestinationModel, SoftDeletionModel):
+
+    class Meta:
+        db_table = "telephone_destination"
+
+    phone_number = models.CharField(max_length=15)
+
+    def notify(self, message: NotificationDestinationModel.NotificationMessage):
+        try:
+            connect = Connect(settings.CONNECT_PHONE_NUMBER)
+            e164_number = phonenumbers.format_number(
+                phonenumbers.parse(self.phone_number, 'JP'),
+                phonenumbers.PhoneNumberFormat.E164
+            )
+            connect.start_outbound_voice_contact(message, e164_number)
+        except ClientError as e:
+            return e.response["Error"]["Message"]
+        else:
+            return "SUCCESS."
+
+    def result_schedule(self, schedule, result: bool):
+        # スケジュール実行時による電話通知はしない
+        pass

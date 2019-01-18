@@ -11,3 +11,4 @@ nav:
   - Home: 'index.md'
   - 環境構築: 'installation.md'
   - 開発者向け構築: 'developer.md'
+  - 利用者マニュアル: 'manual.md'

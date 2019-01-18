@@ -66,7 +66,8 @@
                                                 color="parent.color"></v-checkbox>
                                 </v-list-tile-action>
                                 <v-list-tile-action class>
-                                    <v-icon small>mdi-email-outline</v-icon>
+                                    <v-icon small v-if="item.type.id==='email'">mdi-email-outline</v-icon>
+                                    <v-icon small v-if="item.type.id==='telephone'">mdi-phone</v-icon>
                                 </v-list-tile-action>
 
                                 <v-list-tile-content>
@@ -80,7 +81,8 @@
                                         class="chip--select-multi"
                                         @input="data.parent.selectItem(data.item)"
                                 >
-                                    <v-icon small class="pr-1">mdi-email-outline</v-icon>
+                                    <v-icon small class="pr-1" v-if="data.item.type.id==='email'">mdi-email-outline</v-icon>
+                                    <v-icon small class="pr-1" v-if="data.item.type.id==='telephone'">mdi-phone</v-icon>
                                     {{ data.item.name }}
                                 </v-chip>
                             </template>

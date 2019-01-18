@@ -112,8 +112,11 @@
                                     <v-divider></v-divider>
                                     <v-list dense>
                                         <v-list-tile v-for="(item, i) in props.item.destinations" :key="i">
-                                            <v-icon small class="pr-1">
+                                            <v-icon small class="pr-1" v-if="item.type==='email'">
                                                 mdi-email-outline
+                                            </v-icon>
+                                            <v-icon small class="pr-1" v-if="item.type==='telephone'">
+                                                mdi-phone
                                             </v-icon>
                                             <v-list-tile-content>
                                                 {{item.name}}

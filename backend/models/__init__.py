@@ -6,6 +6,7 @@ from backend.models.role import RoleModel
 from backend.models.notification_group import NotificationGroupModel
 from backend.models.notification_destination import NotificationDestinationModel
 from backend.models.notification_destination import EmailDestination
+from backend.models.notification_destination import TelephoneDestination
 from backend.models.eventmodel import EventModel
 from backend.models.eventmodel import ScheduleModel
 

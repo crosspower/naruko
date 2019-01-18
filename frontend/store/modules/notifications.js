@@ -35,6 +35,8 @@ const actions = {
         // 表示用の値を取得する
         if (dest.type.id === DESTINATION_TYPES.email.id) {
           dest.value = dest.address
+        } else if (dest.type.id === DESTINATION_TYPES.telephone.id) {
+          dest.value = dest.phone_number
         }
       }
       commit('destinations', res.data)

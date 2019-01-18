@@ -39,9 +39,13 @@ CodeStarではダッシュボードから作成したアプリケーションの
 | SES_REGION | 使用するSESのリージョン バージニア北部であれば「us-east-1」と設定します |
 | LOG_GROUP | アプリケーションログの出力先となるCloudWatch Logsのロググループ名 |
 |SNS_TOPIC_NAME  | 通知機能用のSNSトピック名 「NARUKO_NOTIFY」を設定してください。 |
-| NOTIFY_TEXT_MESSAGE | 監視機能で送信される通知メールの本文を設定します※ |
+| NOTIFY_TEXT_MESSAGE | 監視機能で送信される通知メールの本文および電話の読み上げ内容を設定します※ |
 | NOTIFY_TEXT_SUBJECT | 監視機能で送信される通知メールの件名を設定します |
 | EVENT_SNS_TOPIC_ARN | スケジュール機能用のSNSトピックARN 「arn:aws:sns:{鳴子を利用するリージョン}:{鳴子を利用するAWSアカウントのID}:NARUKO_SCHEDULE」を設定します。 |
+| CONNECT_REGION | 電話通知機能用のAmazonConnectを使用するリージョン 東京であれば「ap-northeast-1」と設定します |
+| CONNECT_NOTIFY_INSTANCE_ID | 電話通知機能用のAmazonConnectのインスタンスIDを設定します(後述) |
+| CONNECT_NOTIFY_FLOW_ID | 電話通知機能用のAmazonConnectで使用する問い合わせフローのIDを設定します(後述) |
+| CONNECT_PHONE_NUMBER | 電話通知機能用のAmazonConnectで使用する電話番号を設定します(後述) |
 | DB_ENGINE | [Djangoのドキュメント](https://docs.djangoproject.com/ja/2.1/ref/settings/#engine) を参考に使用するDBのエンジンを設定します|
 | DB_NAME | 使用するDBの名前を設定します（あらかじめ用意したDBをご利用ください） |
 | DB_HOST | 使用するDBの接続先を設定します |
@@ -80,7 +84,47 @@ SESでは初期状態では登録したメールアドレスでしか送受信�
 また、[ドキュメント](https://docs.aws.amazon.com/ja_jp/ses/latest/DeveloperGuide/verify-email-addresses-procedure.html)を参考に送信用のメールアドレスを設定します。  
 ここで設定するメールアドレスは設定値の「SES_ADDRESS」と同じメールアドレスにしてください。  
 
-## 4.Iamロールの設定
+## 4. Amazon Connect 設定
+
+### インスタンス作成
+
+鳴子ではAmazonConnectを利用して電話による通知をおこないます。  
+[ドキュメント](https://docs.aws.amazon.com/ja_jp/connect/latest/adminguide/gettingstarted.html#launch-contact-center)を参考にAmazonConnectインスタンスを作成します。
+
+**ステップ 1: ID 管理**では**Amazon Connect 内にユーザーを保存**を選択します。  
+**ステップ 2: 管理者**では**これをスキップ**を選択します。  
+**ステップ 3: テレフォニーオプション**では**発信通話**にのみチェックを入れます。  
+**ステップ 4: データストレージ**ではデフォルトの設定のまま次に進みます。  
+**ステップ 5: レビューと作成**で設定内容を確認し、インスタンスを作成します。
+
+### 電話番号取得
+
+インスタンス作成直後、**今すぐ始める**というボタンが表示されているのでそこを推すと電話番号を取得する画面が表示されます。  
+
+電話番号はAmazonConnectから提供される好きな番号を利用できます。  
+ここで取得した電話番号を設定値の「CONNECT_PHONE_NUMBER」に設定します。  
+※「+81 50-1234-5678」なら「+815012345678」のようにスペースをハイフンを除いて設定します。
+
+
+### 問い合わせフローの作成
+
+電話通知用の問い合わせフローを作成します。  
+問い合わせフローはあらかじめ作成したテンプレートデータをインポートして作成します。 
+テンプレートデータは下記のjsonをご利用ください。   
+
+```
+{"modules":[{"id":"68d92ff0-eaed-48da-b578-ce100266c320","type":"PlayPrompt","branches":[{"condition":"Success","transition":"6ef88a5f-2165-4a33-86cc-1999db2e2181"}],"parameters":[{"name":"Text","value":"message","namespace":"User Defined"},{"name":"TextToSpeechType","value":"text"}],"metadata":{"position":{"x":908,"y":49},"useDynamic":true}},{"id":"7eeb0845-cd65-42b6-9ce0-5d830354351a","type":"Disconnect","branches":[],"parameters":[],"metadata":{"position":{"x":922,"y":242}}},{"id":"6ef88a5f-2165-4a33-86cc-1999db2e2181","type":"Loop","branches":[{"condition":"Looping","transition":"68d92ff0-eaed-48da-b578-ce100266c320"},{"condition":"Complete","transition":"7eeb0845-cd65-42b6-9ce0-5d830354351a"}],"parameters":[{"name":"LoopCount","namespace":"User Defined","value":"loop_count"}],"metadata":{"position":{"x":670,"y":39},"useDynamic":true}},{"id":"795ee0f8-2d69-4227-bc19-668cd328370d","type":"SetVoice","branches":[{"condition":"Success","transition":"6ef88a5f-2165-4a33-86cc-1999db2e2181"}],"parameters":[{"name":"GlobalVoice","value":"Mizuki"}],"metadata":{"position":{"x":424,"y":32}}},{"id":"a795007b-4714-4cfa-a593-70e1a4429991","type":"SetAttributes","branches":[{"condition":"Success","transition":"795ee0f8-2d69-4227-bc19-668cd328370d"},{"condition":"Error","transition":"795ee0f8-2d69-4227-bc19-668cd328370d"}],"parameters":[{"name":"Attribute","value":"success","key":"status","namespace":null}],"metadata":{"position":{"x":185,"y":30}}}],"version":"1","type":"contactFlow","start":"a795007b-4714-4cfa-a593-70e1a4429991","metadata":{"entryPointPosition":{"x":32,"y":31},"snapToGrid":false,"name":"naruko_notification","description":null,"type":"contactFlow","status":"published","hash":"3351c6c93afd0d0e2bea7ae1989f38d19613853c28629c5392e53a83d6e323d3"}}
+```
+
+問い合わせフローを保存するとブラウザで表示されるURLが以下のようになります。  
+```
+https://【ステップ1で入力した文字列】.awsapps.com/connect/contact-flows/edit?id=arn:aws:connect:【リージョン】:【AWSアカウントID】:instance/【インスタンスID】/contact-flow/【問い合わせフローID】
+```
+
+【インスタンスID】を設定値の「CONNECT_NOTIFY_INSTANCE_ID」に  
+【問い合わせフローID】を設定値の「CONNECT_NOTIFY_FLOW_ID」に設定します。
+
+## 5.Iamロールの設定
 
 鳴子ではプログラム内で様々なAWSサービスを利用しています。  
 本手順に従って動作環境を構築している場合、「CodeStarWorker-{CodeStarのプロジェクト名}-EB」ロールに適切な権限を割り当てる必要があります。  
@@ -96,6 +140,7 @@ IAMから鳴子用のポリシーを作成します。
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
+                "connect:StartOutboundVoiceContact",
                 "events:DescribeRule",
                 "tag:GetResources",
                 "events:PutRule",
@@ -131,7 +176,7 @@ IAMから鳴子用のポリシーを作成します。
 
 ![143879](img/build_env_7.png)
 
-## 5.ソースコードの反映
+## 6.ソースコードの反映
 
 CodeStarで作成されたリポジトリのmasterブランチに鳴子のソースコードをpushします。  
 CodeStar上でアプリケーションの反映が完了したことが確認出来たらエンドポイントにアクセスします。  
@@ -139,7 +184,7 @@ CodeStar上でアプリケーションの反映が完了したことが確認出
 
 ![143879](img/build_env_8.png)
 
-## 6.動作確認
+## 7.動作確認
 
 ログイン画面で  
 メールアドレスに「admin@admin.com」  
