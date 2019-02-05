@@ -67,6 +67,12 @@ class UrlsTestCase(TestCase):
         resolve = url_resolver.resolve('api/tenants/1/aws-environments/')
         self.assertEqual(resolve.func.__name__, "AwsEnvironmentModelViewSet")
 
+    # "tenants/pk/aws-environments/1/regions/region/documents/"にアクセスしたときDocumentViewSetが呼ばれることを確認する
+    def test_access_documents_in_awsenvs_in_tenant(self):
+        url_resolver = URLResolver(RegexPattern(''), "config.urls")
+        resolve = url_resolver.resolve('api/tenants/1/aws-environments/1/regions/region/documents/')
+        self.assertEqual(resolve.func.__name__, "DocumentViewSet")
+
     # "tenants/pk/aws-environments/1/resources/"にアクセスしたときResourceViewSetが呼ばれることを確認する
     def test_access_instances_in_awsenvs_in_tenant(self):
         url_resolver = URLResolver(RegexPattern(''), "config.urls")
@@ -91,6 +97,12 @@ class UrlsTestCase(TestCase):
         url_resolver = URLResolver(RegexPattern(''), "config.urls")
         resolve = url_resolver.resolve('api/tenants/1/notification-groups/')
         self.assertEqual(resolve.func.__name__, "NotificationGroupViewSet")
+
+    # "tenants/pk/logs/"にアクセスしたときOperationLogModelViewSetが呼ばれることを確認する
+    def test_access_logs_in_tenant(self):
+        url_resolver = URLResolver(RegexPattern(''), "config.urls")
+        resolve = url_resolver.resolve('api/tenants/1/logs/')
+        self.assertEqual(resolve.func.__name__, "OperationLogModelViewSet")
 
     # "tenants/pk/aws-environments/1/resources/1/schedules/"にアクセスしたときScheduleViewSetが呼ばれることを確認する
     def test_access_schedule_in_resources_in_awsenvs_in_tenant(self):

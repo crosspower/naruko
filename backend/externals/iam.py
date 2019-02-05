@@ -19,6 +19,11 @@ class Iam(ExternalAwsClient):
         "rds:DescribeDBSnapshots",
         "rds:CreateDBClusterSnapshot",
         "rds:DescribeDBClusterSnapshots",
+        "ssm:SendCommand",
+        "ssm:ListCommandInvocations",
+        "ssm:ListDocuments",
+        "ssm:DescribeDocument",
+        "ssm:DescribeInstanceInformation"
     ]
 
     def _service_name(self):

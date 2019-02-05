@@ -100,6 +100,18 @@ export default function (client) {
     },
     deleteSchedule(tenantId, aws_environments, region, service, resourceId, scheduleId) {
       return client.delete(`/api/tenants/${tenantId}/aws-environments/${aws_environments}/regions/${region}/services/${service}/resources/${resourceId}/schedules/${scheduleId}/`)
+    },
+    getOperationLog(tenantId) {
+      return client.get(`/api/tenants/${tenantId}/logs/`)
+    },
+    getDocuments(tenantId, aws_environments, region) {
+      return client.get(`/api/tenants/${tenantId}/aws-environments/${aws_environments}/regions/${region}/documents/`)
+    },
+    getDocumentDetail(tenantId, aws_environments, region, documentName) {
+      return client.get(`/api/tenants/${tenantId}/aws-environments/${aws_environments}/regions/${region}/documents/${documentName}/`)
+    },
+    runCommand(tenantId, aws_environments, region, service, resourceId, data) {
+      return client.post(`/api/tenants/${tenantId}/aws-environments/${aws_environments}/regions/${region}/services/${service}/resources/${resourceId}/run_command/`, data)
     }
   }
 }

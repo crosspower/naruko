@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from backend.models import TenantModel, NotificationDestinationModel, UserModel, NotificationGroupModel
+from backend.models import TenantModel, NotificationDestinationModel, UserModel, NotificationGroupModel, OperationLogModel
 from backend.exceptions import InvalidNotificationException
 from backend.logger import NarukoLogging
 from backend.externals.sns import Sns
@@ -9,6 +9,20 @@ class ControlNotificationUseCase:
 
     def __init__(self, naruko_logger: NarukoLogging):
         self.logger = naruko_logger.get_logger(__name__)
+
+    @staticmethod
+    def target_dest_info(dest: NotificationDestinationModel):
+        return dest.name
+
+    @staticmethod
+    def target_group_info(group: NotificationGroupModel):
+        return group.name
+
+    @staticmethod
+    def target_notify_info(message: NotificationDestinationModel.NotificationMessage):
+        return "{}_{}_{}_{}_{}_{}_{}".format(message.aws.name, message.aws.aws_account_id, message.resource.region,
+                                             message.resource.get_service_name(), message.resource.resource_id,
+                                             message.metric, message.level)
 
     def fetch_destinations(self, request_user: UserModel, tenant: TenantModel):
         self.logger.info("START: fetch_destinations")
@@ -23,6 +37,7 @@ class ControlNotificationUseCase:
         self.logger.info("END: fetch_destinations")
         return destinations
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_dest_info, target_arg_index_list=[2])
     def create_destination(self, request_user: UserModel, destination: NotificationDestinationModel):
         self.logger.info("START: create_destination")
         if not request_user.can_control_notification():
@@ -37,6 +52,7 @@ class ControlNotificationUseCase:
         self.logger.info("END: create_destination")
         return destination
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_dest_info, target_arg_index_list=[2])
     def delete_destination(self, request_user: UserModel, destination: NotificationDestinationModel):
         self.logger.info("START: delete_destination")
         if not request_user.can_control_notification():
@@ -65,6 +81,7 @@ class ControlNotificationUseCase:
         self.logger.info("END: fetch_groups")
         return destinations
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_group_info, target_arg_index_list=[2])
     def save_group(self, request_user: UserModel, group: NotificationGroupModel):
         self.logger.info("START: save_group")
         if not request_user.can_control_notification():
@@ -80,6 +97,7 @@ class ControlNotificationUseCase:
         self.logger.info("END: save_group")
         return group
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_group_info, target_arg_index_list=[2])
     def delete_group(self, request_user: UserModel, group: NotificationGroupModel):
         self.logger.info("START: delete_group")
         if not request_user.can_control_notification():
@@ -117,6 +135,7 @@ class ControlNotificationUseCase:
 
         self.logger.info("END: verify_sns_notification")
 
+    @OperationLogModel.operation_log(target_method=target_notify_info, target_arg_index_list=[1])
     def notify(self, message: NotificationDestinationModel.NotificationMessage):
         self.logger.info("START: notify")
 

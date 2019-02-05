@@ -8,6 +8,7 @@ import tenants from './modules/tenants'
 import awsAccounts from './modules/awsAccounts'
 import notifications from './modules/notifications'
 import alert from './modules/alert'
+import operationLogs from './modules/operationLogs'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     resourceDetail,
     awsAccounts,
     notifications,
-    alert
+    alert,
+    operationLogs
   }
 })

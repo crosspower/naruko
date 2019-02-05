@@ -1,7 +1,9 @@
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
-from backend.usecases.control_aws_environment import ControlAwsEnvironment
 from unittest.mock import Mock, patch
+# デコレーターをmock化
+with patch('backend.models.OperationLogModel.operation_log', lambda executor_index=None, target_method=None, target_arg_index_list=None: lambda func: func):
+    from backend.usecases.control_aws_environment import ControlAwsEnvironment
 
 
 class ControlAwsEnvironmentTestCase(TestCase):

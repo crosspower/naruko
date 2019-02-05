@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from backend.models import UserModel, AwsEnvironmentModel, TenantModel
+from backend.models import UserModel, AwsEnvironmentModel, TenantModel, OperationLogModel
 from backend.logger import NarukoLogging
 from backend.externals.iam import Iam
 
@@ -8,6 +8,10 @@ class ControlAwsEnvironment:
 
     def __init__(self, naruko_logger: NarukoLogging):
         self.logger = naruko_logger.get_logger(__name__)
+
+    @staticmethod
+    def target_info(aws_env: AwsEnvironmentModel):
+        return "{}_{}".format(aws_env.name, aws_env.aws_account_id)
 
     def fetch_aws_environments(self, request_user: UserModel, tenant: TenantModel):
         self.logger.info("START: fetch_aws_environments")
@@ -23,6 +27,7 @@ class ControlAwsEnvironment:
         self.logger.info("END: fetch_aws_environments")
         return aws_environments
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_info, target_arg_index_list=[2])
     def save_aws_environment(self, request_user: UserModel, aws_environment: AwsEnvironmentModel):
         self.logger.info("START: save_aws_environment")
         if not request_user.is_belong_to_tenant(aws_environment.tenant):
@@ -47,6 +52,7 @@ class ControlAwsEnvironment:
         self.logger.info("END: save_aws_environment")
         return aws_environment
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_info, target_arg_index_list=[2])
     def delete_aws_environment(self, request_user: UserModel, aws_environment: AwsEnvironmentModel):
         self.logger.info("START: delete_aws_environment")
         if not request_user.is_belong_to_tenant(aws_environment.tenant):

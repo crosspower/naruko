@@ -101,6 +101,7 @@
         <Ec2RebootModal slot="body" ref="ec2RebootModal"/>
         <CreateEc2BackupModal slot="body" ref="createEc2BackupModal"/>
         <CreateRdsBackupModal slot="body" ref="createRdsBackupModal"/>
+        <RunCommandModal slot="body" ref="runCommandModal"/>
     </TemplateBase>
 </template>
 
@@ -112,6 +113,7 @@
   import Ec2RebootModal from '@/views/resources/detail/modal/Ec2RebootModal'
   import CreateEc2BackupModal from '@/views/resources/detail/modal/CreateEc2BackupModal'
   import CreateRdsBackupModal from '@/views/resources/detail/modal/CreateRdsBackupModal'
+  import RunCommandModal from '@/views/resources/detail/modal/RunCommandModal'
   import RESOURCES from '@/lib/definition/resources'
 
   export default {
@@ -121,7 +123,8 @@
       Ec2StopModal,
       Ec2RebootModal,
       CreateEc2BackupModal,
-      CreateRdsBackupModal
+      CreateRdsBackupModal,
+      RunCommandModal
     },
     data() {
       return {
@@ -170,7 +173,7 @@
           return
         }
         this.info.isProgress = true
-        this.info.actions = RESOURCES[this.$route.query.service.toUpperCase()].actions.getEnums()
+        this.info.actions = RESOURCES[this.$route.query.service.toUpperCase()].actions.getEnums().slice()
         // 描画のため空の値を入れておく
         this.info.items = []
         RESOURCES[this.$route.query.service.toUpperCase()].infoKeys.forEach((key) => {
@@ -182,6 +185,11 @@
           RESOURCES[this.resource.service].infoKeys.forEach((key) => {
             this.info.items.push({id: key.id, name: key.name, value: this.resource[key.id]})
           })
+          // SSMエージェントを持たないEC2はコマンド実行アクションを表示しない
+          if (this.$route.query.service.toUpperCase() === 'EC2' && ! this.resource.has_ssm_agent) {
+            const index = this.info.actions.indexOf(RESOURCES['EC2']['runCommand'])
+            this.info.actions.splice(index, 1)
+          }
         }).finally(() => {
           this.info.isProgress = false
         })
@@ -198,6 +206,8 @@
             modal = this.$refs.ec2RebootModal
           } else if (action === RESOURCES.EC2.actions.backup.id) {
             modal = this.$refs.createEc2BackupModal
+          } else if (action === RESOURCES.EC2.actions.runCommand.id) {
+            modal = this.$refs.runCommandModal
           }
         } else if (service === 'RDS') {
           if (action === RESOURCES.EC2.actions.backup.id) {

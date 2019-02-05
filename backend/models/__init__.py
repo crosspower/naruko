@@ -9,9 +9,11 @@ from backend.models.notification_destination import EmailDestination
 from backend.models.notification_destination import TelephoneDestination
 from backend.models.eventmodel import EventModel
 from backend.models.eventmodel import ScheduleModel
+from backend.models.operation_log import OperationLogModel
 
 # python models
 from backend.models.monitor import Monitor
 from backend.models.resource.resource import Resource
 from backend.models.event.cloudwatchevent import CloudWatchEvent
 from backend.models.event.event import Event, Schedule
+from backend.models.resource.command import Command, Document, Parameter

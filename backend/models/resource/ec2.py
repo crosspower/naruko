@@ -1,6 +1,4 @@
-from django.conf import settings
 from .resource import Resource
-from datetime import datetime, timedelta
 
 
 class Ec2(Resource):
@@ -18,12 +16,14 @@ class Ec2(Resource):
         self.state = None
         self.spec = None
         self.public_ip_address = None
+        self.has_ssm_agent = None
 
     def serialize(self, aws=None):
         res = super().serialize(aws)
         res.update(
             {
                 "state": self.state,
+                "has_ssm_agent": self.has_ssm_agent
             }
         )
         return res
@@ -42,7 +42,11 @@ class Ec2(Resource):
 
     def describe(self, aws):
         from backend.externals.ec2 import Ec2
-        return Ec2(aws, self.region).describe_instance(self.resource_id)
+        from backend.externals.ssm import Ssm
+        ec2 = Ec2(aws, self.region).describe_instance(self.resource_id)
+        ec2.has_ssm_agent = Ssm(aws, self.region).has_ssm_agent(ec2)
+
+        return ec2
 
     def fetch_backups(self, aws):
         from backend.externals.ec2 import Ec2

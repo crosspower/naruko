@@ -1,4 +1,4 @@
-from backend.models import Event
+from backend.models import Event, OperationLogModel
 from backend.exceptions import InvalidNotificationException
 from backend.logger import NarukoLogging
 from backend.externals.sns import Sns
@@ -8,6 +8,10 @@ class ControlEventUseCase:
 
     def __init__(self, naruko_logger: NarukoLogging):
         self.logger = naruko_logger.get_logger(__name__)
+
+    @staticmethod
+    def target_info(event: Event):
+        return event.identifier_for_log()
 
     def confirm_subscription(self, confirmation_data: dict):
         self.logger.info("START: confirm_subscription")
@@ -32,6 +36,7 @@ class ControlEventUseCase:
 
         self.logger.info("END: verify_sns_notification")
 
+    @OperationLogModel.operation_log(target_method=target_info, target_arg_index_list=[1])
     def execute(self, event: Event):
         self.logger.info("START: execute")
 

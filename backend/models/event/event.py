@@ -49,6 +49,9 @@ class Event:
     def _execute_view(self, request: Request):
         raise NotImplementedError
 
+    def identifier_for_log(self):
+        raise NotImplementedError
+
 
 class Schedule(Event):
 
@@ -146,6 +149,9 @@ class Schedule(Event):
                 resource=schedule.event_model.resource_id
             )
             return {self.params[key]: params_dict[key] for key in self.params}
+
+    def identifier_for_log(self):
+        return self.event_model.name
 
 
 class ScheduleFactory:

@@ -11,7 +11,10 @@ const state = {
   metrics: [],
   backups: [],
   schedules: [],
-  monitorGraph: []
+  monitorGraph: [],
+  documents: [],
+  document: {},
+  command: {}
 }
 
 // getters
@@ -20,7 +23,10 @@ const getters = {
   resource: state => state.resource,
   backups: state => state.backups,
   schedules: state => state.schedules,
-  monitorGraph: state => state.monitorGraph
+  monitorGraph: state => state.monitorGraph,
+  documents: state => state.documents,
+  document: state => state.document,
+  command: state => state.command
 }
 
 // mutations
@@ -39,6 +45,15 @@ const mutations = {
   },
   monitorGraph(state, data) {
     state.monitorGraph = data
+  },
+  documents(state, data) {
+    state.documents = data
+  },
+  document(state, data) {
+    state.document = data
+  },
+  command(state, data) {
+    state.command = data
   }
 }
 
@@ -326,6 +341,47 @@ const actions = {
       return Promise.resolve(res)
     }).catch((res) => {
       dispatch('alert/pushErrorAlert', `スケジュール ${target.name} の削除に失敗しました。`, {root: true})
+      return Promise.reject(res)
+    })
+  },
+  fetchDocuments({commit, rootGetters, dispatch}, [awsAccount, region]) {
+    return httpClient.tenant.getDocuments(
+        rootGetters['user/userData'].tenant.id,
+        awsAccount,
+        region).then((res) => {
+          commit('documents', res.data)
+          return Promise.resolve(res)
+    }).catch((res) => {
+      dispatch('alert/pushErrorAlert', `ドキュメントの取得に失敗しました。`, {root: true})
+      return Promise.reject(res)
+    })
+  },
+  fetchDocument({commit, rootGetters, dispatch}, [awsAccount, region, documentName]) {
+    return httpClient.tenant.getDocumentDetail(
+        rootGetters['user/userData'].tenant.id,
+        awsAccount,
+        region,
+        documentName
+      ).then((res) => {
+        commit('document', res.data)
+        return Promise.resolve(res)
+    }).catch((res) => {
+      dispatch('alert/pushErrorAlert', `ドキュメントの取得に失敗しました。`, {root: true})
+      return Promise.reject(res)
+    })
+  },
+  runCommand({state, commit, rootGetters}, data) {
+    return httpClient.tenant.runCommand(
+      rootGetters['user/userData'].tenant.id,
+      state.resource.aws_environment,
+      state.resource.region,
+      state.resource.service,
+      state.resource.id,
+      data).then((res) => {
+        commit('command', res.data)
+        return Promise.resolve(res)
+    }).catch((res) => {
+      commit('command', {out_put: `コマンドの実行に失敗しました。`})
       return Promise.reject(res)
     })
   }

@@ -810,4 +810,131 @@ describe('store/modules/resourceDetail', () => {
       done()
     })
   })
+
+  it('actions.fetchDocuments', (done) => {
+    const resourceDetail = require('@/store/modules/resourceDetail').default
+
+    const userData = {
+      tenant: {
+        id: 1,
+        name: 'test_tenant'
+      }
+    }
+
+    const awsAccount = 'test account'
+    const region = 'test reigon'
+
+    const responseData = [{name: "AWS-RunShellScript", parameters: []}]
+
+    const httpClient = require('@/lib/httpClient').default
+    httpClient.tenant.getDocuments = jest.fn().mockImplementation((cid, a, r) => {
+      expect(cid).toBe(userData.tenant.id)
+      expect(a).toBe(awsAccount)
+      expect(r).toBe(region)
+      return Promise.resolve({data: responseData})
+    })
+
+    const commit = jest.fn();
+    const rootGetters = {
+      'user/userData': userData
+    }
+    const dispatch = jest.fn()
+    resourceDetail.actions.fetchDocuments({
+      commit, rootGetters, dispatch
+    }, [awsAccount, region]).then((res) => {
+      expect(res.data).toEqual(responseData)
+      expect(httpClient.tenant.getDocuments).toHaveBeenCalledWith(userData.tenant.id, awsAccount, region)
+      done()
+    })
+  })
+
+  it('actions.fetchDocument', (done) => {
+    const resourceDetail = require('@/store/modules/resourceDetail').default
+
+    const userData = {
+      tenant: {
+        id: 1,
+        name: 'test_tenant'
+      }
+    }
+
+    const awsAccount = 'test account'
+    const region = 'test reigon'
+    const documentName = 'test documentName'
+
+    const responseData = [{name: "AWS-RunShellScript", parameters: [
+      {key: "commands", value: null, description: "test"}]}]
+
+    const httpClient = require('@/lib/httpClient').default
+    httpClient.tenant.getDocumentDetail = jest.fn().mockImplementation((cid, a, r, d) => {
+      expect(cid).toBe(userData.tenant.id)
+      expect(a).toBe(awsAccount)
+      expect(r).toBe(region)
+      expect(d).toBe(documentName)
+      return Promise.resolve({data: responseData})
+    })
+
+    const commit = jest.fn();
+    const rootGetters = {
+      'user/userData': userData
+    }
+    const dispatch = jest.fn()
+    resourceDetail.actions.fetchDocument({
+      commit, rootGetters, dispatch
+    }, [awsAccount, region, documentName]).then((res) => {
+      expect(res.data).toEqual(responseData)
+      expect(httpClient.tenant.getDocumentDetail).toHaveBeenCalledWith(userData.tenant.id, awsAccount, region, documentName)
+      done()
+    })
+  })
+
+  it('actions.runCommand', (done) => {
+    const resourceDetail = require('@/store/modules/resourceDetail').default
+
+    const userData = {
+      tenant: {
+        id: 1,
+        name: 'test_tenant'
+      }
+    }
+    const resource = {
+      aws_environment: 'test aws account',
+      region: 'test region',
+      service: 'EC2',
+      id: 'test id',
+      name: 'test name'
+    }
+    const data = {
+
+    }
+    const responseData = [{name: "AWS-RunShellScript", parameters: [
+      {key: "commands", value: null, description: "test"}]}]
+
+    const httpClient = require('@/lib/httpClient').default
+    httpClient.tenant.runCommand = jest.fn().mockImplementation((cid, a, r, s, rid, d) => {
+      expect(cid).toBe(userData.tenant.id)
+      expect(a).toBe(resource.aws_environment)
+      expect(r).toBe(resource.region)
+      expect(s).toBe(resource.service)
+      expect(rid).toBe(resource.id)
+      expect(d).toBe(data)
+      return Promise.resolve({data: responseData})
+    })
+
+    const state = {
+      resource: resource
+    }
+    const commit = jest.fn();
+    const rootGetters = {
+      'user/userData': userData
+    }
+    const dispatch = jest.fn()
+    resourceDetail.actions.runCommand({
+      state, commit, rootGetters, dispatch
+    }, data).then((res) => {
+      expect(res.data).toEqual(responseData)
+      expect(httpClient.tenant.runCommand).toHaveBeenCalledWith(userData.tenant.id, resource.aws_environment, resource.region, resource.service, resource.id, data)
+      done()
+    })
+  })
 })

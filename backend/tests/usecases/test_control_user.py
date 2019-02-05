@@ -1,8 +1,10 @@
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 from backend.exceptions import InvalidPasswordException, InvalidRoleException
-from backend.usecases.control_user import ControlUserUseCase
 from unittest import mock
+# デコレーターをmock化
+with mock.patch('backend.models.OperationLogModel.operation_log', lambda executor_index=None, target_method=None, target_arg_index_list=None: lambda func: func):
+    from backend.usecases.control_user import ControlUserUseCase
 
 
 class ControlUserTestCase(TestCase):

@@ -1,3 +1,5 @@
+import tenant from "../../../../lib/httpClient/tenant";
+
 describe('lib/httpClient/tenant', () => {
   it('getUsers', (done) => {
     const tenant = require('@/lib/httpClient/tenant').default
@@ -615,4 +617,71 @@ describe('lib/httpClient/tenant', () => {
     done()
   })
 
+  it('getOperationLogs', (done) => {
+    const tenant = require('@/lib/httpClient/tenant').default
+
+    const tenantId = 1
+
+
+    const axiosMock = {
+      get: jest.fn()
+    }
+
+    tenant(axiosMock).getOperationLog(tenantId)
+
+    expect(axiosMock.get).toHaveBeenCalledWith(`/api/tenants/${tenantId}/logs/`)
+    done()
+  })
+
+  it('getDocuments', (done) => {
+    const tenant = require('@/lib/httpClient/tenant').default
+    const tenantId = 1
+    const aws_environments = 1
+    const region = 'ap-northeast1'
+    const axiosMock = {
+      get: jest.fn()
+    }
+
+    tenant(axiosMock).getDocuments(tenantId, aws_environments, region)
+    expect(axiosMock.get).toHaveBeenCalledWith(`/api/tenants/${tenantId}/aws-environments/${aws_environments}/regions/${region}/documents/`)
+    done()
+  })
+
+  it('getDocumentDetail', (done) => {
+    const tenant = require('@/lib/httpClient/tenant').default
+    const tenantId = 1
+    const aws_environments = 1
+    const document_name = 'test'
+    const region = 'ap-northeast1'
+    const axiosMock = {
+      get: jest.fn()
+    }
+
+    tenant(axiosMock).getDocumentDetail(tenantId, aws_environments, region, document_name)
+    expect(axiosMock.get).toHaveBeenCalledWith(`/api/tenants/${tenantId}/aws-environments/${aws_environments}/regions/${region}/documents/${document_name}/`)
+    done()
+  })
+
+  it('runCommand', (done) => {
+    const tenant = require('@/lib/httpClient/tenant').default
+    const tenantId = 1
+    const aws_environments = 1
+    const region = 'ap-northeast1'
+    const service = 'ec2'
+    const resourceId = 'i-1234567890'
+    const data = {
+      name: 'document_name',
+      parameters: [
+        {key: 'test', value: 'test'}
+      ]
+    }
+    const axiosMock = {
+      post: jest.fn()
+    }
+
+    tenant(axiosMock).runCommand(tenantId, aws_environments, region, service, resourceId, data)
+    expect(axiosMock.post).toHaveBeenCalledWith(`/api/tenants/${tenantId}/aws-environments/${aws_environments}/regions/${region}/services/${service}/resources/${resourceId}/run_command/`, data)
+    done()
+
+  })
 })

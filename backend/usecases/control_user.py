@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from backend.models import UserModel, TenantModel, RoleModel, AwsEnvironmentModel
+from backend.models import UserModel, TenantModel, RoleModel, AwsEnvironmentModel, OperationLogModel
 from backend.exceptions import InvalidRoleException, InvalidPasswordException
 from backend.logger import NarukoLogging
 
@@ -8,6 +8,10 @@ class ControlUserUseCase:
 
     def __init__(self, naruko_logger: NarukoLogging):
         self.logger = naruko_logger.get_logger(__name__)
+
+    @staticmethod
+    def target_info(user: UserModel):
+        return user.email
 
     def fetch_users(self, request_user: UserModel, tenant: TenantModel):
         self.logger.info("START: fetch_users")
@@ -24,6 +28,7 @@ class ControlUserUseCase:
         self.logger.info("END: fetch_users")
         return response
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_info, target_arg_index_list=[2])
     def delete_user(self, request_user: UserModel, user: UserModel):
         self.logger.info("START: delete_user")
         if not request_user.is_belong_to_tenant(user.tenant):
@@ -36,6 +41,7 @@ class ControlUserUseCase:
         user.delete()
         self.logger.info("END: delete_user")
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_info, target_arg_index_list=[2])
     def create_user(self, request_user: UserModel, user: UserModel, aws_envs: AwsEnvironmentModel, password: str):
         self.logger.info("START: create_user")
         if not request_user.is_belong_to_tenant(user.tenant):
@@ -59,6 +65,7 @@ class ControlUserUseCase:
         self.logger.info("END: create_user")
         return user
 
+    @OperationLogModel.operation_log(executor_index=2, target_method=target_info, target_arg_index_list=[3])
     def update_user(self, post_user_data: dict, request_user: UserModel, target_user: UserModel):
         self.logger.info("START: update user")
         if not request_user.is_belong_to_tenant(target_user.tenant):

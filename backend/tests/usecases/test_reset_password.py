@@ -3,9 +3,11 @@ from django.test.utils import override_settings
 from backend.models import TenantModel, RoleModel, UserModel
 from datetime import datetime
 from unittest import mock
-from backend.usecases.reset_password import ResetPasswordUseCase
 from botocore.exceptions import ClientError
 from backend.exceptions import InvalidEmailException
+# デコレーターをmock化
+with mock.patch('backend.models.OperationLogModel.operation_log', lambda executor_index=None, target_method=None, target_arg_index_list=None: lambda func: func):
+    from backend.usecases.reset_password import ResetPasswordUseCase
 
 
 @mock.patch('backend.usecases.reset_password.Ses')

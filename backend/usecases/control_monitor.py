@@ -1,7 +1,7 @@
 from django.db.models.base import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
 from backend.logger import NarukoLogging
-from backend.models import AwsEnvironmentModel, UserModel, Resource
+from backend.models import AwsEnvironmentModel, UserModel, Resource, OperationLogModel
 from backend.models.monitor import MonitorGraph
 from backend.externals.cloudwatch import CloudWatch
 from backend.externals.sns import Sns
@@ -11,6 +11,12 @@ class ControlMonitorUseCase:
 
     def __init__(self, naruko_logger: NarukoLogging):
         self.logger = naruko_logger.get_logger(__name__)
+
+    @staticmethod
+    def target_info(resource: Resource, aws_env: AwsEnvironmentModel):
+        return "{}_{}_{}_{}_{}_{}".format(aws_env.name, aws_env.aws_account_id, resource.region,
+                                          resource.get_service_name(), resource.resource_id,
+                                          resource.monitors[0].metric.name)
 
     def fetch_monitors(self, request_user: UserModel, aws: AwsEnvironmentModel, resource: Resource):
         self.logger.info("START: fetch_monitors")
@@ -25,6 +31,7 @@ class ControlMonitorUseCase:
         self.logger.info("END: fetch_monitors")
         return monitors
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_info, target_arg_index_list=[2, 3])
     def save_monitor(self, request_user: UserModel, resource: Resource, aws: AwsEnvironmentModel) -> Resource:
         self.logger.info("START: save_monitor")
 

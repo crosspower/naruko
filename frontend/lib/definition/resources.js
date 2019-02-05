@@ -18,6 +18,10 @@ export default new Enum({
       backup: {
         id: 'backup',
         name: 'バックアップ'
+      },
+      runCommand: {
+        id: 'runCommand',
+        name: 'コマンド実行'
       }
     }),
     scheduleActions: new Enum({

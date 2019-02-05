@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.conf import settings
-from backend.models import UserModel
+from backend.models import UserModel, OperationLogModel
 from backend.externals.ses import Ses
 from botocore.exceptions import ClientError
 from backend.exceptions import InvalidEmailException
@@ -13,6 +13,7 @@ class ResetPasswordUseCase:
         self.logger = naruko_logger.get_logger(__name__)
 
     @transaction.atomic
+    @OperationLogModel.operation_log(executor_index=1)
     def reset_password(self, user: UserModel):
         self.logger.info("START: reset password")
         # パスワード変更

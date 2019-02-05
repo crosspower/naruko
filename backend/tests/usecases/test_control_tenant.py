@@ -1,8 +1,10 @@
 from django.test import TestCase
 from backend.models import TenantModel
-from backend.usecases.control_tenant import ControlTenantUseCase
 from backend.exceptions import InvalidRoleException
 from unittest import mock
+# デコレーターをmock化
+with mock.patch('backend.models.OperationLogModel.operation_log', lambda executor_index=None, target_method=None, target_arg_index_list=None: lambda func: func):
+    from backend.usecases.control_tenant import ControlTenantUseCase
 
 
 class ControlTenantTestCase(TestCase):

@@ -1,8 +1,10 @@
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
-from backend.models import UserModel, AwsEnvironmentModel, Resource
-from backend.usecases.control_resource import ControlResourceUseCase
+from backend.models import UserModel, AwsEnvironmentModel
 from unittest import mock
+# デコレーターをmock化
+with mock.patch('backend.models.OperationLogModel.operation_log', lambda executor_index=None, target_method=None, target_arg_index_list=None: lambda func: func):
+    from backend.usecases.control_resource import ControlResourceUseCase
 
 
 class ControlResourceTestCase(TestCase):
@@ -404,3 +406,126 @@ class ControlResourceTestCase(TestCase):
         # 呼び出し検証
         mock_user.is_belong_to_tenant.assert_called_once()
         mock_user.has_aws_env.assert_called_once()
+
+    # コマンド実行：正常系
+    def test_run_command(self):
+        mock_user = mock.Mock(spec=UserModel)
+        mock_aws = mock.Mock(spec=AwsEnvironmentModel)
+        mock_command = mock.Mock()
+
+        # 検証対象の実行
+        res = ControlResourceUseCase(mock.Mock()).run_command(mock_user, mock_aws, mock_command)
+
+        mock_user.is_belong_to_tenant.assert_called_once_with(mock_aws.tenant)
+        mock_user.has_aws_env.assert_called_once_with(mock_aws)
+        mock_command.run.assert_called_once_with(mock_aws)
+        self.assertEqual(res, mock_command)
+
+    # ドキュメント一覧取得
+    @mock.patch("backend.usecases.control_resource.Ssm")
+    def test_fetch_documents(self, mock_ssm):
+        mock_user = mock.Mock(spec=UserModel)
+        mock_aws = mock.Mock(spec=AwsEnvironmentModel)
+
+        list_documents = mock_ssm.return_value.list_documents
+        list_documents.return_value = [[1, 2, 3], [4, 5, 6]]
+
+        # 検証対象の実行
+        res = ControlResourceUseCase(mock.Mock()).fetch_documents(mock_user, mock_aws, "region")
+
+        mock_user.is_belong_to_tenant.assert_called_once_with(mock_aws.tenant)
+        mock_user.has_aws_env.assert_called_once_with(mock_aws)
+        list_documents.assert_called()
+        self.assertEqual(res, [1, 2, 3, 4, 5, 6])
+
+    # ドキュメント一覧取得：リクエストユーザーがテナントに属していない場合
+    @mock.patch("backend.usecases.control_resource.Ssm")
+    def test_fetch_documents_not_belong_to_tenant(self, mock_ssm):
+        mock_user = mock.Mock(spec=UserModel)
+        mock_user.is_belong_to_tenant.return_value = False
+        mock_aws = mock.Mock(spec=AwsEnvironmentModel)
+
+        list_documents = mock_ssm.return_value.list_documents
+        list_documents.return_value = [[1, 2, 3], [4, 5, 6]]
+
+        # 検証対象の実行
+        with self.assertRaises(PermissionDenied):
+            ControlResourceUseCase(mock.Mock()).fetch_documents(mock_user, mock_aws, "region")
+
+        mock_user.is_belong_to_tenant.assert_called_once_with(mock_aws.tenant)
+        mock_user.has_aws_env.assert_not_called()
+        list_documents.assert_not_called()
+
+    # ドキュメント一覧取得：AWS環境が使用できない場合
+    @mock.patch("backend.usecases.control_resource.Ssm")
+    def test_fetch_documents_no_aws(self, mock_ssm):
+        mock_user = mock.Mock(spec=UserModel)
+        mock_user.has_aws_env.return_value = False
+        mock_aws = mock.Mock(spec=AwsEnvironmentModel)
+
+        list_documents = mock_ssm.return_value.list_documents
+        list_documents.return_value = [[1, 2, 3], [4, 5, 6]]
+
+        # 検証対象の実行
+        with self.assertRaises(PermissionDenied):
+            ControlResourceUseCase(mock.Mock()).fetch_documents(mock_user, mock_aws, "region")
+
+        mock_user.is_belong_to_tenant.assert_called_once_with(mock_aws.tenant)
+        mock_user.has_aws_env.assert_called_once_with(mock_aws)
+        list_documents.assert_not_called()
+
+    # ドキュメント詳細取得
+    @mock.patch("backend.usecases.control_resource.Ssm")
+    def test_describe_document(self, mock_ssm):
+        mock_user = mock.Mock(spec=UserModel)
+        mock_aws = mock.Mock(spec=AwsEnvironmentModel)
+        mock_doc = mock.Mock()
+
+        describe_document = mock_ssm.return_value.describe_document
+        describe_document.return_value = mock_doc
+
+        # 検証対象の実行
+        res = ControlResourceUseCase(mock.Mock()).describe_document(mock_user, mock_aws, "region", "name")
+
+        mock_user.is_belong_to_tenant.assert_called_once_with(mock_aws.tenant)
+        mock_user.has_aws_env.assert_called_once_with(mock_aws)
+        describe_document.assert_called_once_with("name")
+        self.assertEqual(res, mock_doc)
+
+    # ドキュメント詳細取得:テナントに属していない場合
+    @mock.patch("backend.usecases.control_resource.Ssm")
+    def test_describe_document_not_belong_to_tenant(self, mock_ssm):
+        mock_user = mock.Mock(spec=UserModel)
+        mock_user.is_belong_to_tenant.return_value = False
+        mock_aws = mock.Mock(spec=AwsEnvironmentModel)
+        mock_doc = mock.Mock()
+
+        describe_document = mock_ssm.return_value.describe_document
+        describe_document.return_value = mock_doc
+
+        # 検証対象の実行
+        with self.assertRaises(PermissionDenied):
+            ControlResourceUseCase(mock.Mock()).describe_document(mock_user, mock_aws, "region", "name")
+
+        mock_user.is_belong_to_tenant.assert_called_once_with(mock_aws.tenant)
+        mock_user.has_aws_env.assert_not_called()
+        describe_document.assert_not_called()
+
+    # ドキュメント詳細取得:AWSを使用できない場合
+    @mock.patch("backend.usecases.control_resource.Ssm")
+    def test_describe_document_no_aws(self, mock_ssm):
+        mock_user = mock.Mock(spec=UserModel)
+        mock_user.has_aws_env.return_value = False
+        mock_aws = mock.Mock(spec=AwsEnvironmentModel)
+        mock_doc = mock.Mock()
+
+        describe_document = mock_ssm.return_value.describe_document
+        describe_document.return_value = mock_doc
+
+        # 検証対象の実行
+        with self.assertRaises(PermissionDenied):
+            ControlResourceUseCase(mock.Mock()).describe_document(mock_user, mock_aws, "region", "name")
+
+        mock_user.is_belong_to_tenant.assert_called_once_with(mock_aws.tenant)
+        mock_user.has_aws_env.assert_called_once_with(mock_aws)
+        describe_document.assert_not_called()

@@ -99,6 +99,57 @@
                     </v-card-text>
                 </v-card>
             </v-flex>
+            <v-flex xs12 class="pb-3">
+                <v-card>
+                    <v-card-title primary-title>
+                        <v-icon class="pr-2">mdi-format-list-bulleted</v-icon>
+                        <span class="subheading">操作ログ</span>
+                    </v-card-title>
+                    <v-card-title>
+                    <v-text-field
+                            v-model="dataTable.search"
+                            append-icon="mdi-magnify"
+                            label="Search"
+                            single-line
+                            hide-details
+                            clearable
+                            class="pt-0"
+                    ></v-text-field>
+                    <v-spacer></v-spacer>
+                    <v-tooltip top>
+                        <v-btn icon flat
+                               slot="activator"
+                               @click="initLogDataTable"
+                               :loading="logDataTables.isProgress"
+                               :disabled="logDataTables.isProgress">
+                            <v-icon>
+                                mdi-refresh
+                            </v-icon>
+                        </v-btn>
+                        <span>更新</span>
+                    </v-tooltip>
+                    </v-card-title>
+                    <v-data-table
+                            :headers="logDataTables.headers"
+                            :items="operationLogs"
+                            :search="logDataTables.search"
+                            :pagination.sync="logDataTables.pagination"
+                            :loading="logDataTables.isProgress"
+                            item-key="name"
+                            class="elevation-0"
+                    >
+                        <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
+                        <template slot="items" slot-scope="props">
+                            <tr>
+                                <td>{{ props.item.created_at }}</td>
+                                <td class="text-xs-left">{{ props.item.tenant.tenant_name }}</td>
+                                <td class="text-xs-left">{{ props.item.executor.name }}</td>
+                                <td class="text-xs-left">{{props.item.operation }}</td>
+                            </tr>
+                        </template>
+                    </v-data-table>
+                </v-card>
+            </v-flex>
         </v-layout>
     </TemplateBase>
 </template>
@@ -130,6 +181,19 @@
             {text: 'ステータス', value: 'status.sortText', filter: 'status.name', align: 'left'},
             {text: '', value: 'name', sortable: false}
           ]
+        },
+        logDataTables: {
+          isProgress: false,
+          pagination : {
+            sortBy: 'created_at',
+            descending: true
+          },
+          headers: [
+            {text: '実行日時', value: 'created_at', filter: 'created_at', align: 'left'},
+            {text: 'テナント', value: 'tenant', filter: 'tenant', align: 'left'},
+            {text: '実行者', value: 'executor', filter: 'executor', align: 'left'},
+            {text: '操作内容', value: 'operation', filter: 'operation', align: 'left'}
+          ]
         }
       }
     },
@@ -137,7 +201,8 @@
       ...mapGetters({
         userData: 'user/userData',
         resources: 'resources/resources',
-        awsEnvFilter: 'resources/awsEnvFilter'
+        awsEnvFilter: 'resources/awsEnvFilter',
+        operationLogs: 'operationLogs/operationLogs'
       }),
       cautionResources: function () {
         const resources = {}
@@ -163,6 +228,7 @@
     },
     methods: {
       ...mapActions('resources', ['fetch', 'cancelFetch']),
+      ...mapActions('operationLogs', ['fetchOperationLogs']),
       initDatatable() {
         this.dataTable.isProgress = true
         this.fetch().finally(() => {
@@ -174,11 +240,18 @@
         if (search.trim() === '') return items
         const props = this.dataTable.headers.map(h => h.filter)
         return items.filter(item => props.some(prop => filter(getObjectValueByPath(item, prop), search)))
+      },
+      initLogDataTable() {
+        this.logDataTables.isProgress = true
+        this.fetchOperationLogs().finally(() => {
+          this.logDataTables.isProgress = false
+        })
       }
     },
     mounted() {
       // マウント時にインスタンス情報を取得する
       this.initDatatable()
+      this.initLogDataTable()
     }
   }
 </script>

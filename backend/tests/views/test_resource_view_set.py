@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from backend.models import UserModel, RoleModel, TenantModel, AwsEnvironmentModel, Resource
+from backend.models import UserModel, RoleModel, TenantModel, AwsEnvironmentModel, Command, Document, Parameter
+from backend.models.resource.ec2 import Ec2
 from datetime import datetime
 from unittest import mock
 
@@ -415,3 +416,117 @@ class InstanceViewSetTestCase(TestCase):
 
         describe_resource.assert_not_called()
         self.assertEqual(response.status_code, 404)
+
+    # コマンド実行：正常系
+    def test_run_command(self, use_case: mock.Mock):
+        client = APIClient()
+        user_model = UserModel.objects.get(email="test_email")
+        client.force_authenticate(user=user_model)
+
+        # Company1のIDを取得
+        tenant_id = TenantModel.objects.get(tenant_name="test_tenant_users_in_tenant_1").id
+
+        # AWS環境のIDを取得
+        aws_id = AwsEnvironmentModel.objects.get(aws_account_id="test_aws1").id
+
+        run_command = use_case.return_value.run_command
+        run_command.return_value = Command(
+            Document("document_name", [Parameter(key="param", value="value")]),
+            Ec2("ap-northeast-1", "i-123456789012")
+        )
+
+        # 検証対象の実行
+        response = client.post(
+            path=self.api_path.format(tenant_id, aws_id) + "run_command/",
+            data=dict(
+                name="document_name",
+                parameters=[dict(key="param", value="value")]
+            ),
+            format='json')
+
+        run_command.assert_called_once()
+        self.assertEqual(response.status_code, 200)
+
+    # コマンド実行：テナントが存在しない場合
+    def test_run_command_no_tenant(self, use_case: mock.Mock):
+        client = APIClient()
+        user_model = UserModel.objects.get(email="test_email")
+        client.force_authenticate(user=user_model)
+
+        # AWS環境のIDを取得
+        aws_id = AwsEnvironmentModel.objects.get(aws_account_id="test_aws1").id
+
+        run_command = use_case.return_value.run_command
+        run_command.return_value = Command(
+            Document("document_name", [Parameter(key="param", value="value")]),
+            Ec2("ap-northeast-1", "i-123456789012")
+        )
+
+        # 検証対象の実行
+        response = client.post(
+            path=self.api_path.format(100, aws_id) + "run_command/",
+            data=dict(
+                name="document_name",
+                parameters=[dict(key="param", value="value")]
+            ),
+            format='json')
+
+        run_command.assert_not_called()
+        self.assertEqual(response.status_code, 404)
+
+    # コマンド実行：AWS環境が存在しない場合
+    def test_run_command_no_aws(self, use_case: mock.Mock):
+        client = APIClient()
+        user_model = UserModel.objects.get(email="test_email")
+        client.force_authenticate(user=user_model)
+
+        # Company1のIDを取得
+        tenant_id = TenantModel.objects.get(tenant_name="test_tenant_users_in_tenant_1").id
+
+        run_command = use_case.return_value.run_command
+        run_command.return_value = Command(
+            Document("document_name", [Parameter(key="param", value="value")]),
+            Ec2("ap-northeast-1", "i-123456789012")
+        )
+
+        # 検証対象の実行
+        response = client.post(
+            path=self.api_path.format(tenant_id, 100) + "run_command/",
+            data=dict(
+                name="document_name",
+                parameters=[dict(key="param", value="value")]
+            ),
+            format='json')
+
+        run_command.assert_not_called()
+        self.assertEqual(response.status_code, 404)
+
+    # コマンド実行：指定されたサービスがEC2でない場合
+    def test_run_command_not_ec2(self, use_case: mock.Mock):
+        client = APIClient()
+        user_model = UserModel.objects.get(email="test_email")
+        client.force_authenticate(user=user_model)
+
+        # Company1のIDを取得
+        tenant_id = TenantModel.objects.get(tenant_name="test_tenant_users_in_tenant_1").id
+
+        # AWS環境のIDを取得
+        aws_id = AwsEnvironmentModel.objects.get(aws_account_id="test_aws1").id
+
+        run_command = use_case.return_value.run_command
+        run_command.return_value = Command(
+            Document("document_name", [Parameter(key="param", value="value")]),
+            Ec2("ap-northeast-1", "i-123456789012")
+        )
+
+        # 検証対象の実行
+        response = client.post(
+            path=self.api_path.format(tenant_id, aws_id).replace("ec2", "rds") + "run_command/",
+            data=dict(
+                name="document_name",
+                parameters=[dict(key="param", value="value")]
+            ),
+            format='json')
+
+        run_command.assert_not_called()
+        self.assertEqual(response.status_code, 400)

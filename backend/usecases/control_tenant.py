@@ -1,5 +1,5 @@
 from django.conf import settings
-from backend.models import TenantModel, UserModel, RoleModel
+from backend.models import TenantModel, UserModel, RoleModel, OperationLogModel
 from backend.logger import NarukoLogging
 from backend.externals.ses import Ses
 from backend.exceptions import InvalidRoleException
@@ -9,6 +9,10 @@ class ControlTenantUseCase:
 
     def __init__(self, naruko_logger: NarukoLogging):
         self.logger = naruko_logger.get_logger(__name__)
+
+    @staticmethod
+    def target_info(tenant: TenantModel):
+        return tenant.tenant_name
 
     def fetch_tenants(self, request_user: UserModel):
         self.logger.info("START: fetch_tenants")
@@ -20,6 +24,7 @@ class ControlTenantUseCase:
         self.logger.info("END: fetch_tenants")
         return response
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_info, target_arg_index_list=[2])
     def create_tenant(self, request_user: UserModel, tenant: TenantModel, user: UserModel):
         self.logger.info("START: create_tenant")
 
@@ -58,6 +63,7 @@ class ControlTenantUseCase:
 
         return tenant, user
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_info, target_arg_index_list=[2])
     def delete_tenant(self, request_user: UserModel, tenant: TenantModel):
         self.logger.info("START: delete_tenant")
 
@@ -67,6 +73,7 @@ class ControlTenantUseCase:
         tenant.delete()
         self.logger.info("END: delete_tenant")
 
+    @OperationLogModel.operation_log(executor_index=1, target_method=target_info, target_arg_index_list=[2])
     def update_tenant(self, request_user: UserModel, tenant: TenantModel) -> TenantModel:
         self.logger.info("START: update_tenant")
 
