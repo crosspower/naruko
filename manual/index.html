@@ -162,7 +162,7 @@
   
 
 
-  <a href="https://github.com/crosspower/exam-pj/" title="リポジトリへ" class="md-source" data-md-source="github">
+  <a href="https://github.com/crosspower/naruko/" title="リポジトリへ" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -211,7 +211,7 @@
   
 
 
-  <a href="https://github.com/crosspower/exam-pj/" title="リポジトリへ" class="md-source" data-md-source="github">
+  <a href="https://github.com/crosspower/naruko/" title="リポジトリへ" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -553,6 +553,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_25" title="リソースの操作" class="md-nav__link">
+    リソースの操作
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_26" title="概要" class="md-nav__link">
+    概要
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_27" title="操作方法" class="md-nav__link">
+    操作方法
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -841,6 +868,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_25" title="リソースの操作" class="md-nav__link">
+    リソースの操作
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_26" title="概要" class="md-nav__link">
+    概要
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_27" title="操作方法" class="md-nav__link">
+    操作方法
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -857,7 +911,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/crosspower/exam-pj/edit/master/docs/manual.md" title="編集" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/crosspower/naruko/edit/master/docs/manual.md" title="編集" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
                 <h1 id="_1">利用者マニュアル</h1>
@@ -1286,7 +1340,11 @@
                 &quot;rds:DescribeDBInstances&quot;,
                 &quot;cloudwatch:DescribeAlarms&quot;,
                 &quot;rds:CreateDBClusterSnapshot&quot;,
-                &quot;cloudwatch:GetMetricData&quot;
+                &quot;cloudwatch:GetMetricData&quot;,
+                &quot;ssm:SendCommand&quot;,
+                &quot;ssm:ListCommandInvocations&quot;,
+                &quot;ssm:ListDocuments&quot;,
+                &quot;ssm:DescribeDocument&quot;
             ],
             &quot;Resource&quot;: &quot;*&quot;
         }
@@ -1428,6 +1486,51 @@ AWSアカウントを登録する場合は、AWSアカウント管理画面で<c
 </tbody>
 </table>
 <p><img alt="143883" src="../img/manual_22.png" /></p>
+<h2 id="_25">リソースの操作<a name="profile"></a></h2>
+<h3 id="_26">概要</h3>
+<p>リソースの種類によって、リソースに対して電源操作やバックアップの取得といった操作を行うことができます。</p>
+<h3 id="_27">操作方法</h3>
+<p>リソースの操作をする場合は、サイドメニューの<code>リソース一覧</code>からリソース一覧画面を開きます。
+リソース一覧画面から監視設定したいリソースの虫眼鏡アイコンをクリックしリソース管理画面を開きます。</p>
+<p><img alt="143883" src="../img/manual_11.png" /></p>
+<p>リソース管理画面でメニューボタンを押すと、実行可能な操作を選ぶことができます。</p>
+<p><img alt="143883" src="../img/manual_26.png" /></p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>リソース種別</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>起動</td>
+<td>EC2</td>
+<td>停止済みのEC2を起動することができます。</td>
+</tr>
+<tr>
+<td>停止</td>
+<td>EC2</td>
+<td>稼働中のEC2を停止することができます。</td>
+</tr>
+<tr>
+<td>再起動</td>
+<td>EC2</td>
+<td>稼働中のEC2を再起動することができます。</td>
+</tr>
+<tr>
+<td>バックアップ取得</td>
+<td>EC2, RDS</td>
+<td>リソースのバックアップを取得します。<br>EC2ではAMIを、RDSではスナップショットを作成します。</td>
+</tr>
+<tr>
+<td>コマンド実行</td>
+<td>EC2</td>
+<td>AWS Systems Managerのランコマンド機能を使用できます。<br><a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-prereqs.html">Systems Manager の前提条件</a>を満たしていないリソースでは、このアクションは表示されません。</td>
+</tr>
+</tbody>
+</table>
                 
                   
                 
