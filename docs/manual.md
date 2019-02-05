@@ -334,7 +334,11 @@ AWSアカウントで登録したAWSアカウントを選択します。
                 "rds:DescribeDBInstances",
                 "cloudwatch:DescribeAlarms",
                 "rds:CreateDBClusterSnapshot",
-                "cloudwatch:GetMetricData"
+                "cloudwatch:GetMetricData",
+                "ssm:SendCommand",
+                "ssm:ListCommandInvocations",
+                "ssm:ListDocuments",
+                "ssm:DescribeDocument"
             ],
             "Resource": "*"
         }
@@ -416,3 +420,29 @@ AWSアカウントを登録する場合は、AWSアカウント管理画面で`A
 |パスワードの確認|ログイン用のパスワード（確認）です。|
 
 ![143883](img/manual_22.png)
+
+
+## リソースの操作<a name="profile"></a>
+
+### 概要
+
+リソースの種類によって、リソースに対して電源操作やバックアップの取得といった操作を行うことができます。
+
+### 操作方法
+
+リソースの操作をする場合は、サイドメニューの`リソース一覧`からリソース一覧画面を開きます。
+リソース一覧画面から監視設定したいリソースの虫眼鏡アイコンをクリックしリソース管理画面を開きます。
+
+![143883](img/manual_11.png)
+
+リソース管理画面でメニューボタンを押すと、実行可能な操作を選ぶことができます。
+
+![143883](img/manual_26.png)
+
+|操作|リソース種別|説明|
+|---|---|---|
+|起動|EC2|停止済みのEC2を起動することができます。|
+|停止|EC2|稼働中のEC2を停止することができます。|
+|再起動|EC2|稼働中のEC2を再起動することができます。|
+|バックアップ取得|EC2, RDS|リソースのバックアップを取得します。<br>EC2ではAMIを、RDSではスナップショットを作成します。|
+|コマンド実行|EC2|AWS Systems Managerのランコマンド機能を使用できます。<br>[Systems Manager の前提条件](https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-prereqs.html)を満たしていないリソースでは、このアクションは表示されません。|
