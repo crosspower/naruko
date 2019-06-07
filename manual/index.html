@@ -580,6 +580,40 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_28" title="請求管理" class="md-nav__link">
+    請求管理
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_29" title="概要" class="md-nav__link">
+    概要
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws_2" title="AWSマネジメントコンソール上での手順" class="md-nav__link">
+    AWSマネジメントコンソール上での手順
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_30" title="操作方法" class="md-nav__link">
+    操作方法
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -895,6 +929,40 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_28" title="請求管理" class="md-nav__link">
+    請求管理
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_29" title="概要" class="md-nav__link">
+    概要
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws_2" title="AWSマネジメントコンソール上での手順" class="md-nav__link">
+    AWSマネジメントコンソール上での手順
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_30" title="操作方法" class="md-nav__link">
+    操作方法
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -1014,7 +1082,11 @@
                 &quot;rds:DescribeDBInstances&quot;,
                 &quot;cloudwatch:DescribeAlarms&quot;,
                 &quot;rds:CreateDBClusterSnapshot&quot;,
-                &quot;cloudwatch:GetMetricData&quot;
+                &quot;cloudwatch:GetMetricData&quot;,
+                &quot;ssm:SendCommand&quot;,
+                &quot;ssm:ListCommandInvocations&quot;,
+                &quot;ssm:ListDocuments&quot;,
+                &quot;ssm:DescribeDocument&quot;
             ],
             &quot;Resource&quot;: &quot;*&quot;
         }
@@ -1104,8 +1176,12 @@
 <td>タイプが<code>メール</code>のときに追加されます。通知先となるメールアドレスを設定します。</td>
 </tr>
 <tr>
+<td>国番号</td>
+<td>タイプが<code>電話</code>のときに追加されます。リストの中から登録したい電話番号の国番号を選択します。</td>
+</tr>
+<tr>
 <td>電話番号</td>
-<td>タイプが<code>電話</code>の時に追加されます。通知先となる電話番号を設定します。日本の電話番号のみ設定できます。</td>
+<td>タイプが<code>電話</code>のときに追加されます。通知先となる電話番号を設定します。</td>
 </tr>
 </tbody>
 </table>
@@ -1139,7 +1215,7 @@
 <h2 id="_8">監視設定<a name="monitoring"></a></h2>
 <h3 id="_9">概要</h3>
 <p>監視設定ではリソースに対してサービスに応じたメトリクスの監視設定をすることができます。<br />
-監視設定をおこなうと、アラート発生時にリソースが属するAWSアカウントに紐づいた通知グループに通知が送られます。</p>
+監視設定をおこなうと、アラート発生時とアラート復旧時にリソースが属するAWSアカウントに紐づいた通知グループに通知が送られます。</p>
 <h3 id="_10">操作方法</h3>
 <p>監視設定を利用する場合は、サイドメニューの<code>リソース一覧</code>からリソース一覧画面を開きます。
 リソース一覧画面から監視設定したいリソースの虫眼鏡アイコンをクリックしリソース管理画面を開きます。</p>
@@ -1157,7 +1233,7 @@
 <tbody>
 <tr>
 <td>警告閾値</td>
-<td>警告とする閾値を設定します。単位はメトリクスごとに変化します。</td>
+<td>警告とする閾値を設定します。単位はメトリクスごとに変化します。<br>アラート発生後、この閾値を下回った状態が復旧状態とみなされます。</td>
 </tr>
 <tr>
 <td>危険閾値</td>
@@ -1528,6 +1604,36 @@ AWSアカウントを登録する場合は、AWSアカウント管理画面で<c
 <td>コマンド実行</td>
 <td>EC2</td>
 <td>AWS Systems Managerのランコマンド機能を使用できます。<br><a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-prereqs.html">Systems Manager の前提条件</a>を満たしていないリソースでは、このアクションは表示されません。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_28">請求管理<a name="profile"></a></h2>
+<h3 id="_29">概要</h3>
+<p>各月12時間間隔の累積請求額を取得することができます。
+取得している情報は「概算合計請求額」です。</p>
+<h3 id="aws_2">AWSマネジメントコンソール上での手順</h3>
+<p>IAMユーザーからAWSの請求情報へのアクセスはデフォルトでは許可されていません。<br>
+下記を参考にアクセス許可の設定を行います。<br>
+<a href="https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/grantaccess.html">IAMユーザーのAWS請求情報へのアクセスを許可</a></p>
+<h3 id="_30">操作方法</h3>
+<p>請求情報を取得する場合は、サイドメニューの<code>請求管理</code>から請求管理画面を開きます。
+そのままAWSアカウントと表示月数を選択し、更新ボタンをクリックすると請求情報が表示されます。</p>
+<p><img alt="143883" src="../img/manual_27.png" /></p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>入力内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AWSアカウント</td>
+<td>請求額を取得したいAWSアカウントを選択します。ユーザーに設定したAWSアカウントから選択可能です。</td>
+</tr>
+<tr>
+<td>表示月数</td>
+<td>当日から何ヶ月前の請求情報まで表示するかを選択します。1/3/6/9/12/15ヶ月が選択可能です。</td>
 </tr>
 </tbody>
 </table>
