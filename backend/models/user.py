@@ -294,6 +294,13 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
         """
         return self._is_master() or self._is_admin() or self._is_scheduler()
 
+    def can_fetch_billing(self):
+        """
+        請求情報を利用する権限を持っているか
+        :return: 請求情報を利用する権限を持っているか
+        """
+        return self._is_master() or self._is_admin() or self._is_scheduler()
+
     def can_control_notification(self):
         """
         通知を操作できるか

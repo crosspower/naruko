@@ -105,7 +105,7 @@ class NotificationDestinationModelTestCase(TestCase):
             updated_at=now
         )
         objects_create = TelephoneDestination.objects.create(
-            name="test", tenant=tenant_model, phone_number="+81312345678", created_at=now, updated_at=now)
+            name="test", tenant=tenant_model, phone_number="080-1234-5678", country_code=81, created_at=now, updated_at=now)
 
         objects_create.save()
 
@@ -162,7 +162,8 @@ class NotificationDestinationModelTestCase(TestCase):
             },
             "AlarmName": "NARUKO-EC2-i-1234567890123456-NetworkOut-DANGER",
             "StateChangeTime": "2018-12-01T00:00:00.000+0000",
-            "AWSAccountId": "1234567890"
+            "AWSAccountId": "1234567890",
+            "NewStateValue": "ALARM"
         }
 
         message = NotificationDestinationModel.NotificationMessage(alarm_message)
@@ -230,7 +231,7 @@ class NotificationDestinationModelTestCase(TestCase):
             updated_at=now
         )
         objects_create = TelephoneDestination.objects.create(
-            name="test", tenant=tenant_model, phone_number="080-1234-5678", created_at=now, updated_at=now)
+            name="test", tenant=tenant_model, phone_number="080-1234-5678", country_code=81, created_at=now, updated_at=now)
 
         objects_create.save()
 
@@ -240,7 +241,7 @@ class NotificationDestinationModelTestCase(TestCase):
         mock_connect.return_value.start_outbound_voice_contact.assert_called_with(mock_message, "+818012345678")
         self.assertEqual(res, "SUCCESS.")
 
-    # 電話通知：正常系
+    # 電話通知：Connectとの接続でエラーが起きた場合
     @mock.patch('backend.models.notification_destination.Connect')
     def test_telephone_notify_exception(self, mock_connect):
         now = datetime.now()
@@ -250,7 +251,7 @@ class NotificationDestinationModelTestCase(TestCase):
             updated_at=now
         )
         objects_create = TelephoneDestination.objects.create(
-            name="test", tenant=tenant_model, phone_number="080-1234-5678", created_at=now, updated_at=now)
+            name="test", tenant=tenant_model, phone_number="080-1234-5678", country_code=81, created_at=now, updated_at=now)
 
         objects_create.save()
 
@@ -264,3 +265,23 @@ class NotificationDestinationModelTestCase(TestCase):
 
         mock_connect.return_value.start_outbound_voice_contact.assert_called_with(mock_message, "+818012345678")
         self.assertEqual(res, "TEST_MESSAGE")
+
+    # 電話通知：不正な電話番号の場合
+    @mock.patch('backend.models.notification_destination.Connect')
+    def test_telephone_notify_invalid_number(self, mock_connect):
+        now = datetime.now()
+        tenant_model = TenantModel.objects.create(
+            tenant_name="test_tenant",
+            created_at=now,
+            updated_at=now
+        )
+        objects_create = TelephoneDestination.objects.create(
+            name="test", tenant=tenant_model, phone_number="080-1234-5678", country_code=1000, created_at=now, updated_at=now)
+
+        objects_create.save()
+
+        mock_message = mock.Mock()
+        res = objects_create.notify(mock_message)
+
+        mock_connect.return_value.start_outbound_voice_contact.assert_not_called()
+        self.assertEqual(res, "Destination's Country Code is invalid. 1000 Id: {}".format(objects_create.pk))

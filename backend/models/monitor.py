@@ -56,6 +56,8 @@ class MonitorGraph:
         self.metric_name = metric_name
         self.timestamps = []
         self.values = []
+        self.service_name = ''
+        self.dimensions = []
 
     def serialize(self):
         return {
@@ -82,6 +84,14 @@ class MonitorValue:
     class MonitorLevel(Enum):
         CAUTION = "caution"
         DANGER = "danger"
+
+        def is_lowest_level(self):
+            """
+            最も低い（安全な）レベルかどうか
+
+            :return: 最も低い監視レベルであればTrue そうでなければFalse
+            """
+            return self == self.CAUTION
 
     def __init__(self, level: MonitorLevel, value: int):
         self.level = level

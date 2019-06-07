@@ -9,9 +9,9 @@
                 <v-card-text>
                     <v-form ref="form" v-model="valid">
                         <v-select
-                                v-model="type"
+                                v-model="destinationType"
                                 prepend-icon="mdi-format-list-bulleted-type"
-                                :items="types"
+                                :items="destinationTypes"
                                 item-text="name"
                                 item-value="id"
                                 label="タイプ*"
@@ -24,24 +24,11 @@
                                 prepend-icon="mdi-information"
                                 label="名前*"
                         ></v-text-field>
-                        <v-text-field
-                                v-model="address"
-                                :disabled="isProgress"
-                                :rules="addressRules"
-                                type="text"
-                                prepend-icon="mdi-email-outline"
-                                label="メールアドレス*"
-                                v-if="type === 'email'"
-                        ></v-text-field>
-                        <v-text-field
-                                v-model="phone_number"
-                                :disabled="isProgress"
-                                :rules="phoneRules"
-                                type="text"
-                                prepend-icon="mdi-phone"
-                                label="電話番号*"
-                                v-if="type === 'telephone'"
-                        ></v-text-field>
+                        <component
+                                v-bind:is="destinationType"
+                                :is-progress="isProgress"
+                                v-model="params"
+                        ></component>
                     </v-form>
                     <small>*必須項目</small>
                 </v-card-text>
@@ -68,22 +55,28 @@
   import {mapActions} from 'vuex'
   import VALIDATION_RULE from '@/lib/definition/validationRule'
   import DESTINATION_TYPES from '@/lib/definition/destinationTypes'
-
+  import email from '@/views/notifications/modal/components/EmailDestinationParameters'
+  import telephone from '@/views/notifications/modal/components/TelephoneDestinationParameters'
 
   export default {
+    components: {
+      email,
+      telephone
+    },
     data() {
       return {
         isOpen: false,
         isProgress: false,
         valid: true,
-        types: DESTINATION_TYPES.getEnums(),
-        type: '',
+        params: {
+          address: '',
+          phone_number: '',
+          country_code: ''
+        },
+        destinationTypes: DESTINATION_TYPES.getEnums(),
+        destinationType: '',
         name: '',
-        address: '',
-        phone_number: '',
         nameRules: VALIDATION_RULE.NOTIFICATION.DESTINATION.NAME,
-        addressRules: VALIDATION_RULE.NOTIFICATION.DESTINATION.ADDRESS,
-        phoneRules: VALIDATION_RULE.NOTIFICATION.DESTINATION.TEL,
         resolve: null,
         reject: null
       }
@@ -92,8 +85,6 @@
       ...mapActions('notifications', ['addDestination']),
       open() {
         // モーダルを開く
-        this.type = DESTINATION_TYPES.email.name
-
         this.isProgress = false
         this.isOpen = true
 
@@ -107,9 +98,10 @@
           this.isProgress = true
           const data = {
             name: this.name,
-            type: this.type,
-            address: this.address,
-            phone_number: this.phone_number
+            type: this.destinationType,
+            address: this.params.address,
+            phone_number: this.params.phone_number,
+            country_code: this.params.country_code
           }
           this.addDestination(data).then(() => {
             return this.resolve(true)

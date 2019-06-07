@@ -142,7 +142,7 @@ class TenantModelViewSetTestCase(TestCase):
 
         response = api_client.delete(self.api_path_in_tenant_pk.format("invalid"), format='json')
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     # テナントを作成できることを確認する
     @mock.patch("backend.views.tenant_model_view_set.UserModelDetailSerializer")

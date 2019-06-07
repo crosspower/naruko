@@ -88,7 +88,7 @@ class ControlMonitorTestCase(TestCase):
 
         mock_user.has_aws_env.assert_called()
         mock_resource.get_metrics.assert_called_once()
-        get_chart.assert_called_once_with(mock_monitor_graph, mock_resource)
+        get_chart.assert_called_once_with(mock_monitor_graph)
         self.assertEqual(res, get_chart.return_value)
 
     # グラフデータ取得：AWS環境を利用できない場合

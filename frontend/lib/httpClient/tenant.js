@@ -24,6 +24,9 @@ export default function (client) {
     editAwsAccount(tenantId, awsAccountId, data) {
       return client.put(`/api/tenants/${tenantId}/aws-environments/${awsAccountId}/`, data)
     },
+    getBilling(tenantId,awsAccountId,data){
+      return client.post(`/api/tenants/${tenantId}/aws-environments/${awsAccountId}/billing/`,data)
+    },
     getResources(cancelToken, tenantId, aws_environments, region) {
       return client.get(`/api/tenants/${tenantId}/aws-environments/${aws_environments}/resources/?region=${region}`, {
         cancelToken: cancelToken

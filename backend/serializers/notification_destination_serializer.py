@@ -67,6 +67,7 @@ class TelephoneDestinationModelSerializer(serializers.ModelSerializer):
         fields = NotificationDestinationModelDetailSerializer.Meta.fields + (
             'type',
             'phone_number',
+            'country_code'
         )
 
 
@@ -79,6 +80,7 @@ class TelephoneDestinationModelDetailSerializer(serializers.ModelSerializer):
         fields = NotificationDestinationModelDetailSerializer.Meta.fields + (
             'type',
             'phone_number',
+            'country_code'
         )
 
 

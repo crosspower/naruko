@@ -150,6 +150,7 @@ class CloudWatch(ExternalAwsClient):
         """
         アラームを設定する
         一つのメトリクスに対しNARUKOで取り扱う監視レベルの数だけアラームを設定する
+        最も低いレベルのアラームには復旧時のトリガーを設定する
 
         :param resource:
         :param topic_arn:
@@ -157,7 +158,7 @@ class CloudWatch(ExternalAwsClient):
         """
         monitor = resource.monitors[0]
         for monitor_value in monitor.monitor_values:
-            self.client.put_metric_alarm(
+            params = dict(
                 AlarmName=CloudWatch.NARUKO_ALARM_NAME.format(
                     resource.get_service_name(),
                     resource.resource_id,
@@ -179,20 +180,26 @@ class CloudWatch(ExternalAwsClient):
                 ComparisonOperator=monitor.metric.comparison_operator
             )
 
-    def get_chart(self, monitor_graph: MonitorGraph, resource: Resource):
+            # 最も安全なレベルのアラームには復旧時の通知を設定する
+            if monitor_value.level.is_lowest_level():
+                params.update(dict(OKActions=[topic_arn]))
 
-        for graph_data in [graph_data_list for graph_data_list in self._get_chart(monitor_graph, resource)]:
+            self.client.put_metric_alarm(**params)
+
+    def get_chart(self, monitor_graph: MonitorGraph):
+
+        for graph_data in [graph_data_list for graph_data_list in self._get_chart(monitor_graph)]:
             monitor_graph.timestamps.extend(graph_data["Timestamps"])
             monitor_graph.values.extend(graph_data["Values"])
 
         return monitor_graph
 
-    def _get_chart(self, monitor_graph: MonitorGraph, resource: Resource):
+    def _get_chart(self, monitor_graph: MonitorGraph):
         # 最初はTokenなし
         response = self.get_metric_data(
-            monitor_graph=monitor_graph,
-            resource=resource
+            monitor_graph=monitor_graph
         )
+
         token = response.get("NextToken")
         yield response["MetricDataResults"][0]
 
@@ -200,24 +207,20 @@ class CloudWatch(ExternalAwsClient):
         while token:
             response = self.get_metric_data(
                 monitor_graph=monitor_graph,
-                resource=resource,
                 token=token
             )
             token = response.get("NextToken")
             yield response["MetricDataResults"][0]
 
-    def get_metric_data(self, monitor_graph: MonitorGraph, resource: Resource, token: str = None):
+    def get_metric_data(self, monitor_graph: MonitorGraph, token: str = None):
         params = dict(
             MetricDataQueries=[dict(
                 Id=monitor_graph.metric_name.lower(),
                 MetricStat=dict(
                     Metric=dict(
-                        Namespace=resource.get_namespace(),
+                        Namespace=monitor_graph.service_name,
                         MetricName=monitor_graph.metric_name,
-                        Dimensions=[dict(
-                            Name=resource.get_id_name(),
-                            Value=resource.resource_id
-                        )]
+                        Dimensions=monitor_graph.dimensions
                     ),
                     Period=monitor_graph.period,
                     Stat=monitor_graph.stat
