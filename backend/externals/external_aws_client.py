@@ -13,7 +13,6 @@ class ExternalAwsClient:
             aws_environment.aws_external_id
         )
         credentials = result['Credentials']
-
         # セッション取得
         session = self._build_session(
             credentials['AccessKeyId'],

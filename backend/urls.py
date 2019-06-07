@@ -1,7 +1,8 @@
 # backend/urls.py
 from django.urls import re_path
 from backend.views import views, tenant_model_view_set, user_model_view_set, aws_model_view_set, \
-    resource_view_set, monitor_view_set, notification_destination_model_view_set, notification_group_view_set,\
+    resource_view_set, monitor_view_set, notification_destination_model_view_set, \
+    notification_group_view_set,\
     schedule_view_set, backup_view_set, operation_log_model_view_set, document_model_view_set
 from rest_framework_nested import routers
 
@@ -23,6 +24,7 @@ tenant_router.register(r'logs', operation_log_model_view_set.OperationLogModelVi
 aws_router = routers.NestedSimpleRouter(tenant_router, r'aws-environments', lookup='aws_env')
 aws_router.register(r'resources', resource_view_set.ResourceViewSet, base_name='resources')
 aws_router.register(r'regions', resource_view_set.RegionViewSet, base_name='regions')
+
 
 region_router = routers.NestedSimpleRouter(aws_router, r'regions', lookup='region')
 region_router.register(r'services', resource_view_set.ServiceViewSet, base_name=r'services')

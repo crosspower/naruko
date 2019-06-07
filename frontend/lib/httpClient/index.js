@@ -34,7 +34,7 @@ httpClient.interceptors.request.use(function (config) {
     const payload = JSON.parse(window.atob(token.split('.')[1]))
 
     // トークンの有効期限に余裕がある場合はスキップ
-    if (payload.exp - 60 > (Date.now() / 1000).toFixed(0)) {
+    if (payload.exp - 1800 > (Date.now() / 1000).toFixed(0)) {
       return config
     }
 

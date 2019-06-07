@@ -15,6 +15,12 @@ import phonenumbers
 
 
 class NotificationDestinationModel(PolymorphicModel, SoftDeletionModel):
+    """
+    通知先ベースクラス
+
+    各通知方法を表すクラスは、このクラスを継承して定義する
+    各通知方法に共通するデータはこのクラスに定義する
+    """
 
     class Meta:
         db_table = "notification_destination"
@@ -43,6 +49,11 @@ class NotificationDestinationModel(PolymorphicModel, SoftDeletionModel):
                 notification_destination.delete()
 
     class NotificationMessage:
+        """
+        通知メッセージクラス
+
+        CloudWatchアラームからSNSへ送られたメッセージのデータを保持する
+        """
 
         LEVEL = {
             "CAUTION": "警告",
@@ -50,6 +61,10 @@ class NotificationDestinationModel(PolymorphicModel, SoftDeletionModel):
         }
 
         def __init__(self, alarm_message):
+            """
+            :param alarm_message: CloudWatchアラームからSNSへ送られた生のメッセージ
+            """
+
             region = alarm_message["Region"]
             service_type = alarm_message["Trigger"]["Namespace"].replace("AWS/", "")
             resource_id = alarm_message["Trigger"]["Dimensions"][0]["value"]
@@ -62,18 +77,42 @@ class NotificationDestinationModel(PolymorphicModel, SoftDeletionModel):
             self.resource = Resource.get_service_resource(
                 region, service_type, resource_id)
             self.metric = alarm_message["Trigger"]["MetricName"]
-            self.level = self.LEVEL.get(level, level)  # DANGER or CAUTION
+            # 発火後のアラームのステータスがALARMの場合は、該当するレベル
+            # OKの場合は正常とする：正常の発火は警告用のアラームのみ
+            self.level = self.LEVEL.get(level, level) if alarm_message["NewStateValue"] == "ALARM" else "正常"
             self.aws = AwsEnvironmentModel.objects.get(aws_account_id=alarm_message["AWSAccountId"])
             self.time = time_date.strftime('%Y{}%m{}%d{} %H{}%M{}%S{}').format("年", "月", "日", "時", "分", "秒")
 
     def notify(self, message: NotificationMessage):
+        """
+        通知
+
+        通知メッセージの内容をもとに各通知方法にしたがって通知を行う
+
+        :param message: 通知メッセージ
+        :return: 処理結果メッセージ
+        """
         raise NotImplementedError
 
     def result_schedule(self, schedule, result: bool):
+        """
+        スケジュール結果通知
+
+        スケジュール実行結果を書く通知方法に従って通知する
+
+        :param schedule: スケジュール
+        :param result: スケジュール結果成否
+        :return: 処理結果メッセージ
+        """
         raise NotImplementedError
 
 
 class EmailDestination(NotificationDestinationModel, SoftDeletionModel):
+    """
+    メール通知先クラス
+
+    自身が持つメールアドレスにメール通知をおこなう
+    """
 
     class Meta:
         db_table = "email_destination"
@@ -100,22 +139,31 @@ class EmailDestination(NotificationDestinationModel, SoftDeletionModel):
 
 
 class TelephoneDestination(NotificationDestinationModel, SoftDeletionModel):
+    """
+    電話通知先クラス
+
+    自身が持つ国番号と電話番号にしたがって電話通知をおこなう
+    """
 
     class Meta:
         db_table = "telephone_destination"
 
     phone_number = models.CharField(max_length=15)
+    country_code = models.IntegerField(default=81)
 
     def notify(self, message: NotificationDestinationModel.NotificationMessage):
         try:
+            region = phonenumbers.COUNTRY_CODE_TO_REGION_CODE.get(self.country_code, ())[0]
             connect = Connect(settings.CONNECT_PHONE_NUMBER)
             e164_number = phonenumbers.format_number(
-                phonenumbers.parse(self.phone_number, 'JP'),
+                phonenumbers.parse(self.phone_number, region),
                 phonenumbers.PhoneNumberFormat.E164
             )
             connect.start_outbound_voice_contact(message, e164_number)
         except ClientError as e:
             return e.response["Error"]["Message"]
+        except IndexError:
+            return "Destination's Country Code is invalid. {} Id: {}".format(self.country_code, self.pk)
         else:
             return "SUCCESS."
 

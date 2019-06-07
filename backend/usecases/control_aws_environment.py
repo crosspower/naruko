@@ -2,6 +2,8 @@ from django.core.exceptions import PermissionDenied
 from backend.models import UserModel, AwsEnvironmentModel, TenantModel, OperationLogModel
 from backend.logger import NarukoLogging
 from backend.externals.iam import Iam
+from backend.models.monitor import MonitorGraph
+from backend.externals.cloudwatch import CloudWatch
 
 
 class ControlAwsEnvironment:
@@ -65,3 +67,27 @@ class ControlAwsEnvironment:
         # 削除
         aws_environment.delete()
         self.logger.info("END: delete_aws_environment")
+
+    def billing_graph(self, request_user: UserModel, aws: AwsEnvironmentModel, monitor_graph: MonitorGraph):
+        self.logger.info("START: graph")
+
+        # 使用できるAWSアカウントか
+        if not request_user.has_aws_env(aws):
+            raise PermissionDenied("request user can't use aws account. user_id: {}, aws_id: {}"
+                                   .format(request_user.id, aws.id))
+        
+        # 請求情報を取得する権限を持っているか
+        if not request_user.can_fetch_billing():
+            raise PermissionDenied("request user can't fetch aws_environments. id:{}".format(request_user.id))
+
+        # APIの引数を充足
+        monitor_graph.service_name = 'AWS/Billing'
+        monitor_graph.dimensions.append(
+            dict(
+                Name='Currency',
+                Value='USD'
+            ))
+        monitor_graph = CloudWatch(aws, 'us-east-1').get_chart(monitor_graph)
+
+        self.logger.info("END: graph")
+        return monitor_graph

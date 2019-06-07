@@ -60,7 +60,6 @@
                                 </v-card>
                             </v-flex>
                         </v-layout>
-
                         <v-data-table
                                 :items="alertedResources[awsAccount.id]"
                                 :headers="dataTable.headers"

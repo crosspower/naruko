@@ -99,6 +99,14 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "tenants" */ './views/tenants/Tenants.vue')
     },
     {
+      path: '/costs',
+      name: 'costs',
+      meta: {
+        role: [ROLE.ADMIN.id, ROLE.MASTER.id]
+      },
+      component: () => import(/*webpackChunkName: "costs" */ './views/cost/Cost.vue')
+    },
+    {
       path: '/notifications',
       name: 'notifications',
       meta: {

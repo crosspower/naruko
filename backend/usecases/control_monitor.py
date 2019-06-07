@@ -66,7 +66,14 @@ class ControlMonitorUseCase:
             raise ObjectDoesNotExist("service doesn't have metric service_type: {} metric: {}"
                                      .format(resource.get_service_name(), monitor_graph.metric_name))
 
-        monitor_graph = CloudWatch(aws, resource.region).get_chart(monitor_graph, resource)
+        # API引数をresourceから充足
+        monitor_graph.service_name = resource.get_namespace()
+        monitor_graph.dimensions.append(
+            dict(
+                Name=resource.get_id_name(),
+                Value=resource.resource_id
+            ))
+        monitor_graph = CloudWatch(aws, resource.region).get_chart(monitor_graph)
 
         self.logger.info("END: graph")
         return monitor_graph

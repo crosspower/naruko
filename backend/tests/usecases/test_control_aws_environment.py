@@ -1,6 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 from unittest.mock import Mock, patch
+from unittest import mock
 # デコレーターをmock化
 with patch('backend.models.OperationLogModel.operation_log', lambda executor_index=None, target_method=None, target_arg_index_list=None: lambda func: func):
     from backend.usecases.control_aws_environment import ControlAwsEnvironment
@@ -159,3 +160,53 @@ class ControlAwsEnvironmentTestCase(TestCase):
         mock_user.is_belong_to_tenant.assert_called_once()
         mock_user.can_control_aws.assert_called_once()
         mock_aws.delete.assert_not_called()
+
+    # 請求情報取得：正常系
+    @mock.patch('backend.usecases.control_aws_environment.CloudWatch')
+    def test_billing_graph(self, mock_cloudwatch: Mock):
+        # mock準備
+        mock_user = Mock()
+        mock_aws = Mock()
+        mock_monitor_graph = Mock()
+
+        mock_user.can_fetch_billing.return_value = True
+        mock_user.has_aws_env.return_value = True
+
+        get_chart = mock_cloudwatch.return_value.get_chart
+        res = ControlAwsEnvironment(Mock()).billing_graph(mock_user, mock_aws, mock_monitor_graph)
+
+        mock_user.has_aws_env.assert_called()
+        mock_user.can_fetch_billing.assert_called()
+        mock_cloudwatch.assert_called_once_with(mock_aws, 'us-east-1')
+        get_chart.assert_called_once_with(mock_monitor_graph)
+        self.assertEqual(res, get_chart.return_value)
+
+    # 請求情報取得：使用できないAWSアカウントの場合
+    def test_billing_graph_cant_use_aws(self):
+        mock_user = Mock()
+        mock_aws = Mock()
+        mock_monitor_graph = Mock()
+
+        mock_user.can_fetch_billing.return_value = True
+        mock_user.has_aws_env.return_value = False
+
+        with self.assertRaises(PermissionDenied):
+            ControlAwsEnvironment(Mock()).billing_graph(mock_user, mock_aws, mock_monitor_graph)
+
+        mock_user.has_aws_env.assert_called()
+        mock_user.can_fetch_billing.assert_not_called()
+
+    # 請求情報取得：権限を持っていないアカウントの場合
+    def test_billing_graph_dont_have_permission(self):
+        mock_user = Mock()
+        mock_aws = Mock()
+        mock_monitor_graph = Mock()
+
+        mock_user.can_fetch_billing.return_value = False
+        mock_user.has_aws_env.return_value = True
+
+        with self.assertRaises(PermissionDenied):
+            ControlAwsEnvironment(Mock()).billing_graph(mock_user, mock_aws, mock_monitor_graph)
+
+        mock_user.has_aws_env.assert_called()
+        mock_user.can_fetch_billing.assert_called()

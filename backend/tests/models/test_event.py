@@ -256,20 +256,29 @@ class EventTestCase(TestCase):
         with self.assertRaises(NotImplementedError):
             Event(mock_model, mock_aws).execute()
 
-    def test_execute_schedule(self):
+    @mock.patch('backend.models.event.event.getattr')
+    def test_execute_schedule(self, mock_getattr):
         mock_dest = mock.Mock()
         mock_group = mock.Mock()
         mock_group.destinations.filter.return_value = [mock_dest]
 
+        mock_response = mock.Mock()
+        mock_response.status_code = 200
+        mock_view_func = mock.Mock()
+        mock_view_func.return_value = mock_response
+        mock_getattr.return_value = mock_view_func
+
         mock_aws_env = mock.Mock(spec=AwsEnvironmentModel)
         mock_aws_env.tenant = TenantModel.objects.get(tenant_name="test_tenant_users_in_tenant_1")
         mock_aws_env.notification_groups.filter.return_value = [mock_group]
+        mock_aws_env.id = 1
 
         # scheduleModel mock
         mock_schedule = mock.Mock()
         mock_schedule.params = '{"test": "test"}'
         mock_schedule.action = "START"
         mock_schedule.aws_environment = mock_aws_env
+        mock_schedule.service = 'EC2'
         # cloudwatchevent mock
         mock_aws_cloudwatchevent = mock.Mock()
 
@@ -279,16 +288,24 @@ class EventTestCase(TestCase):
 
         # 通知がされているか
         self.assertTrue(mock_schedule.notification)
-        mock_dest.result_schedule.assert_called_once_with(schedule, False)
+        mock_dest.result_schedule.assert_called_once_with(schedule, True)
 
-    def test_execute_schedule_no_notification(self):
+    @mock.patch('backend.models.event.event.getattr')
+    def test_execute_schedule_no_notification(self, mock_getattr):
         mock_dest = mock.Mock()
         mock_group = mock.Mock()
         mock_group.destinations.filter.return_value = [mock_dest]
 
+        mock_response = mock.Mock()
+        mock_response.status_code = 200
+        mock_view_func = mock.Mock()
+        mock_view_func.return_value = mock_response
+        mock_getattr.return_value = mock_view_func
+
         mock_aws_env = mock.Mock(spec=AwsEnvironmentModel)
         mock_aws_env.tenant = TenantModel.objects.get(tenant_name="test_tenant_users_in_tenant_1")
         mock_aws_env.notification_groups.filter.return_value = [mock_group]
+        mock_aws_env.id = 1
 
         # scheduleModel mock
         mock_schedule = mock.Mock()
@@ -296,6 +313,7 @@ class EventTestCase(TestCase):
         mock_schedule.action = "START"
         mock_schedule.aws_environment = mock_aws_env
         mock_schedule.notification = False
+        mock_schedule.service = 'EC2'
         # cloudwatchevent mock
         mock_aws_cloudwatchevent = mock.Mock()
 
