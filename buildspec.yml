@@ -16,6 +16,8 @@ phases:
       # Install dependencies needed for running tests
       - npm ci
       - npm config set strict-ssl true
+      - pip freeze > deletelist.txt
+      - pip uninstall -r deletelist.txt
       - pip install -r requirements.txt
       - npm run build
 
