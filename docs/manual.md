@@ -76,6 +76,7 @@
                 "ec2:DescribeImages",
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "cloudwatch:PutMetricAlarm",
+                "cloudwatch:ListMetrics",
                 "iam:SimulatePrincipalPolicy",
                 "ec2:StartInstances",
                 "rds:CreateDBSnapshot",
@@ -332,6 +333,7 @@ AWSアカウントで登録したAWSアカウントを選択します。
                 "ec2:DescribeImages",
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "cloudwatch:PutMetricAlarm",
+                "cloudwatch:ListMetrics",
                 "iam:SimulatePrincipalPolicy",
                 "ec2:StartInstances",
                 "rds:CreateDBSnapshot",
@@ -458,7 +460,7 @@ AWSアカウントを登録する場合は、AWSアカウント管理画面で`A
 ### 概要
 
 各月12時間間隔の累積請求額を取得することができます。
-取得している情報は「概算合計請求額」です。
+取得している情報は「概算合計請求額」に加え、Cloudwatchが取得可能な「サービス毎の請求額」です。
 
 ### AWSマネジメントコンソール上での手順
 IAMユーザーからAWSの請求情報へのアクセスはデフォルトでは許可されていません。<br>
@@ -470,11 +472,12 @@ IAMユーザーからAWSの請求情報へのアクセスはデフォルトで�
 
 請求情報を取得する場合は、サイドメニューの`請求管理`から請求管理画面を開きます。
 そのままAWSアカウントと表示月数を選択し、更新ボタンをクリックすると請求情報が表示されます。
+各サービスのチェックボックスをON/OFFすることで、グラフへの表示・非表示を切り替えることができます。
 
 ![143883](img/manual_27.png)
-
 
 |項目|入力内容|
 |---|---|
 |AWSアカウント|請求額を取得したいAWSアカウントを選択します。ユーザーに設定したAWSアカウントから選択可能です。|
-|表示月数|当日から何ヶ月前の請求情報まで表示するかを選択します。1/3/6/9/12/15ヶ月が選択可能です。|
+|表示月数|当日から何ヶ月前の請求情報まで表示するかを選択します。3/6/9/12/15ヶ月が選択可能です。|
+|チェックボックス|サービス毎の請求情報を表示・非表示切り替えることが可能です。|
