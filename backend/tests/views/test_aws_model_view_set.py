@@ -3,7 +3,6 @@ from rest_framework.test import APIClient
 from backend.models import AwsEnvironmentModel, TenantModel, RoleModel, UserModel
 from datetime import datetime
 from unittest.mock import patch, Mock
-from backend.models.monitor import MonitorGraph
 
 
 @patch("backend.views.aws_model_view_set.ControlAwsEnvironment")
@@ -290,24 +289,31 @@ class AwsEnvironmentModelViewSetTestCase(TestCase):
             period=21600,
             stat="Maximum"
         )
+        request = dict(
+            user='test@test.com',
+            data=data
+        )
 
         billing_graph = usecase_mock.return_value.billing_graph
-        billing_graph.return_value = MonitorGraph(
-            **data, metric_name="EstimatedCharges"
-        )
-
+        billing_graph.return_value = [
+            {'service': 'AWSService',
+             'timestamps': [datetime(2019, 6, 29, 7, 55),
+                            datetime(2019, 6, 29, 19, 55),
+                            datetime(2019, 6, 30, 7, 55),
+                            datetime(2019, 7, 4, 7, 55)],
+             'values': [0.0, 0.0, 0.0, 0.0]}
+        ]
         response = api_client.post(
             self.api_path_in_tenant.format(tenant_id, aws_env_id)+"/billing/",
-            data=data,
+            data=request,
             format='json'
         )
-
         usecase_mock.assert_called_once()
         billing_graph.assert_called_once()
         self.assertEqual(response.status_code, 200)
 
     # 請求情報の取得：AWS環境が見つからない場合
-    def test_billing(self, usecase_mock):
+    def test_billing_no_aws(self, usecase_mock):
         api_client = APIClient()
         user_model = UserModel.objects.get(email="test_email")
         api_client.force_authenticate(user=user_model)
@@ -321,9 +327,6 @@ class AwsEnvironmentModelViewSetTestCase(TestCase):
         )
 
         billing_graph = usecase_mock.return_value.billing_graph
-        billing_graph.return_value = MonitorGraph(
-            **data, metric_name="EstimatedCharges"
-        )
 
         response = api_client.post(
             self.api_path_in_tenant.format(-1, -1)+"/billing/",
@@ -336,7 +339,7 @@ class AwsEnvironmentModelViewSetTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     # 請求情報の取得：パラメーターが不正の場合
-    def test_billing(self, usecase_mock):
+    def test_billing_param_bad(self, usecase_mock):
         api_client = APIClient()
         user_model = UserModel.objects.get(email="test_email")
         api_client.force_authenticate(user=user_model)
@@ -346,26 +349,14 @@ class AwsEnvironmentModelViewSetTestCase(TestCase):
         aws_env_model = AwsEnvironmentModel.objects.get(name="test_name1")
         aws_env_id = aws_env_model.id
 
-        # リクエストデータ
-        data = dict(
-            start_time="2018-12-15T11:17:40+09:00",
-            end_time="2018-12-16T11:17:40+09:00",
-            period=21600,
-            stat="Maximum"
-        )
-
         billing_graph = usecase_mock.return_value.billing_graph
-        billing_graph.return_value = MonitorGraph(
-            **data, metric_name="EstimatedCharges"
-        )
 
         response = api_client.post(
             self.api_path_in_tenant.format(tenant_id, aws_env_id)+"/billing/",
             data='invalid',
             format='json'
         )
-
-        usecase_mock.assert_not_called()
+        usecase_mock.assert_called_once()
         billing_graph.assert_not_called()
         self.assertEqual(response.status_code, 400)
 

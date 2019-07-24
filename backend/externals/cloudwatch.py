@@ -186,6 +186,68 @@ class CloudWatch(ExternalAwsClient):
 
             self.client.put_metric_alarm(**params)
 
+    def list_metrics(self, name_space, metric_name, dimensions: list):
+
+        paginator = self.client.get_paginator('list_metrics')
+        # データが存在する場合のみ詰める
+        params = {}
+        if name_space:
+            params["Namespace"] = name_space
+        if metric_name:
+            params["MetricName"] = metric_name
+        if dimensions:
+            params["Dimensions"].append(dimensions)
+
+        # 戻り値の成形
+        response = []
+        for i in [resp['Metrics'] for resp in paginator.paginate(**params)]:
+            response.extend(i)
+        return response
+
+    def get_metric_multi_datas(self, name_space, period, stat, start_time, end_time, metric_data_queries: list, token: str = None):
+        params = dict(
+            MetricDataQueries=[
+                dict(
+                    Id="request" + str(i),
+                    MetricStat=dict(
+                        Metric=dict(
+                            Namespace=name_space,
+                            MetricName=query['metric_name'],
+                            Dimensions=query['dimensions']
+                        ),
+                        Period=period,
+                        Stat=stat
+                    )
+                ) for i, query in enumerate(metric_data_queries)],
+            StartTime=start_time,
+            EndTime=end_time,
+            ScanBy="TimestampAscending"
+        )
+
+        if token:
+            params["NextToken"] = token
+
+        response = self.client.get_metric_data(**params)
+
+        return response
+
+    def get_multi_charts(self, name_space, period, stat, start_time, end_time, metric_data_queries):
+        response = self.get_metric_multi_datas(name_space, period, stat, start_time, end_time, metric_data_queries)
+        results = {}
+        for i, metric_data_result in enumerate(response['MetricDataResults']):
+            results[metric_data_result['Id']] = dict(
+                timestamps=metric_data_result['Timestamps'],
+                values=metric_data_result['Values'],
+                config=metric_data_queries[i])
+        while 'NextToken' in response:
+            response = self.get_metric_multi_datas(name_space, period, stat, start_time, end_time, metric_data_queries,
+                                             response['NextToken'])
+            for metric_data_result in response['MetricDataResults']:
+                results[metric_data_result['Id']]["timestamps"].extend(metric_data_result['Timestamps'])
+                results[metric_data_result['Id']]["values"].extend(metric_data_result['Values'])
+
+        return results.values()
+
     def get_chart(self, monitor_graph: MonitorGraph):
 
         for graph_data in [graph_data_list for graph_data_list in self._get_chart(monitor_graph)]:
@@ -228,8 +290,7 @@ class CloudWatch(ExternalAwsClient):
             )],
             StartTime=monitor_graph.start_time,
             EndTime=monitor_graph.end_time,
-            ScanBy="TimestampAscending",
-            MaxDatapoints=500
+            ScanBy="TimestampAscending"
         )
 
         if token:

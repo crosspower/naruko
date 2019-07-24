@@ -9,7 +9,6 @@ from rest_framework import status
 from backend.logger import NarukoLogging
 from django.db import transaction
 from rest_framework.decorators import action
-from backend.models.monitor import MonitorGraph
 
 
 class AwsEnvironmentModelViewSet(ViewSet):
@@ -73,7 +72,6 @@ class AwsEnvironmentModelViewSet(ViewSet):
         logger = log.get_logger(__name__)
         logger.info("START: billing")
         aws_environment = AwsEnvironmentModel.objects.get(id=pk, tenant_id=tenant_pk)
-        monitor_graph = MonitorGraph(metric_name='EstimatedCharges', **request.data)
-        billing_graph = ControlAwsEnvironment(log).billing_graph(request.user, aws_environment, monitor_graph)
+        billing_graph = ControlAwsEnvironment(log).billing_graph(request.user, aws_environment, **request.data)
         logger.info("END: billing")
-        return Response(data=billing_graph.serialize(), status=status.HTTP_200_OK)
+        return Response(data=billing_graph, status=status.HTTP_200_OK)
