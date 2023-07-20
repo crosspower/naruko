@@ -135,7 +135,6 @@ class ControlNotificationUseCase:
 
         self.logger.info("END: verify_sns_notification")
 
-    @OperationLogModel.operation_log(target_method=target_notify_info, target_arg_index_list=[1])
     def notify(self, message: NotificationDestinationModel.NotificationMessage):
         self.logger.info("START: notify")
 
